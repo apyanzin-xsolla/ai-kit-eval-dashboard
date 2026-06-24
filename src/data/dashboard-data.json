@@ -1,0 +1,120 @@
+{
+  "metadata": {
+    "methodology": "k runs x ai_kit/docs/no_context variants",
+    "success_rate_note": "distribution is shown explicitly; do not rely on a single-run average"
+  },
+  "summary": {
+    "total_runs": 18,
+    "skills": [
+      "catalog-design"
+    ],
+    "variants": [
+      "ai_kit",
+      "docs",
+      "no_context"
+    ],
+    "contract_errors": 9,
+    "safety_errors": 0
+  },
+  "leaderboard": [
+    {
+      "skill": "catalog-design",
+      "variant": "ai_kit",
+      "runs": 6,
+      "successes": 6,
+      "success_rate_pct": 100,
+      "success_distribution": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "first_try_success_rate_pct": 100,
+      "pass_at_k_pct": 100,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 69,
+      "tokens_distribution": [
+        68,
+        68,
+        68,
+        70,
+        70,
+        70
+      ],
+      "validated_confidence_mean": 90.0,
+      "clarifications": 4,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 0,
+      "api_contract_last_verified": "2026-06-11"
+    },
+    {
+      "skill": "catalog-design",
+      "variant": "docs",
+      "runs": 6,
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 75,
+      "tokens_distribution": [
+        74,
+        74,
+        74,
+        76,
+        76,
+        76
+      ],
+      "validated_confidence_mean": 60.4,
+      "clarifications": 6,
+      "corrections": 9,
+      "contract_errors": 3,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "catalog-design",
+      "variant": "no_context",
+      "runs": 6,
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 65,
+      "tokens_distribution": [
+        64,
+        64,
+        64,
+        66,
+        66,
+        66
+      ],
+      "validated_confidence_mean": 43.6,
+      "clarifications": 12,
+      "corrections": 18,
+      "contract_errors": 6,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    }
+  ]
+}
