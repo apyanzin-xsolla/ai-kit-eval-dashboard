@@ -57,9 +57,10 @@ def render_variant_summary(rows: list[dict]) -> str:
     ]
     labels = {
         "ai_kit": "AI Kit",
-        "docs": "Official docs"
+        "docs": "Official docs",
+        "no_context": "No context",
     }
-    for variant in ["ai_kit", "docs"]:
+    for variant in ["ai_kit", "docs", "no_context"]:
         total = variant_totals(rows, variant)
         lines.append(
             "| {label} | {successes}/{runs} | {rate} | {confidence} | {safety} | {contract} | {tokens:.0f} |".format(
@@ -79,12 +80,13 @@ def render_variant_summary(rows: list[dict]) -> str:
 def render_skill_table(data: dict) -> str:
     rows = data["leaderboard"]
     lines = [
-        "| Skill | AI Kit | Official Docs | Winner | AI Kit Safety | Docs Safety | Notes |",
-        "|---|---:|---:|---|---:|---:|---|",
+        "| Skill | AI Kit | Official Docs | No Context | Winner | AI Kit Safety | Docs Safety | No Context Safety | Notes |",
+        "|---|---:|---:|---:|---|---:|---:|---:|---|",
     ]
     for skill in data["summary"]["skills"]:
         ai = get_row(rows, skill, "ai_kit")
         docs = get_row(rows, skill, "docs")
+        no_context = get_row(rows, skill, "no_context")
         notes = []
         if ai["success_rate_pct"] == 0 and docs["success_rate_pct"] == 0:
             notes.append("both fail")
@@ -95,15 +97,18 @@ def render_skill_table(data: dict) -> str:
         if skill == "payments-config":
             notes.append("skill is placeholder/planned")
         lines.append(
-            "| {skill} | {ai_rate} `{ai_dist}` | {docs_rate} `{docs_dist}` | {winner} | {ai_safety} | {docs_safety} | {notes} |".format(
+            "| {skill} | {ai_rate} `{ai_dist}` | {docs_rate} `{docs_dist}` | {no_rate} `{no_dist}` | {winner} | {ai_safety} | {docs_safety} | {no_safety} | {notes} |".format(
                 skill=skill,
                 ai_rate=pct(ai["success_rate_pct"]),
                 ai_dist="".join(map(str, ai["success_distribution"])),
                 docs_rate=pct(docs["success_rate_pct"]),
                 docs_dist="".join(map(str, docs["success_distribution"])),
+                no_rate=pct(no_context["success_rate_pct"]),
+                no_dist="".join(map(str, no_context["success_distribution"])),
                 winner=winner(ai, docs),
                 ai_safety=ai["safety_errors"],
                 docs_safety=docs["safety_errors"],
+                no_safety=no_context["safety_errors"],
                 notes=", ".join(notes) if notes else "-",
             )
         )
@@ -116,14 +121,16 @@ def render_success_mermaid(data: dict) -> str:
     labels = [skill.replace("-setup", "").replace("-design", "").replace("-config", "").replace("-impl", "") for skill in skills]
     ai_values = [str(get_row(rows, skill, "ai_kit")["success_rate_pct"] or 0) for skill in skills]
     docs_values = [str(get_row(rows, skill, "docs")["success_rate_pct"] or 0) for skill in skills]
+    no_context_values = [str(get_row(rows, skill, "no_context")["success_rate_pct"] or 0) for skill in skills]
     quoted_labels = ", ".join(f'"{label}"' for label in labels)
     return f"""```mermaid
 xychart-beta
-    title "Success Rate by Skill: AI Kit vs Official Docs"
+    title "Success Rate by Skill"
     x-axis [{quoted_labels}]
     y-axis "Success rate (%)" 0 --> 100
     bar [{", ".join(ai_values)}]
     bar [{", ".join(docs_values)}]
+    bar [{", ".join(no_context_values)}]
 ```"""
 
 
@@ -133,14 +140,16 @@ def render_risk_mermaid(data: dict) -> str:
     labels = [skill.replace("-setup", "").replace("-design", "").replace("-config", "").replace("-impl", "") for skill in skills]
     ai_safety = [str(get_row(rows, skill, "ai_kit")["safety_errors"]) for skill in skills]
     docs_safety = [str(get_row(rows, skill, "docs")["safety_errors"]) for skill in skills]
+    no_context_safety = [str(get_row(rows, skill, "no_context")["safety_errors"]) for skill in skills]
     quoted_labels = ", ".join(f'"{label}"' for label in labels)
     return f"""```mermaid
 xychart-beta
-    title "Safety Errors by Skill: AI Kit vs Official Docs"
+    title "Safety Errors by Skill"
     x-axis [{quoted_labels}]
     y-axis "Safety errors" 0 --> 3
     bar [{", ".join(ai_safety)}]
     bar [{", ".join(docs_safety)}]
+    bar [{", ".join(no_context_safety)}]
 ```"""
 
 
@@ -192,12 +201,16 @@ We evaluated 6 `xsolla-ai-kit` skills using the current harness algorithm.
 
 - **AI Kit**: task prompt + `SKILL.md` + skill references.
 - **Official docs**: task prompt + curated `developers.xsolla.com` corpus.
-Each skill was run `k=3` times for the AI Kit and official-docs variants, then judged by an Anthropic LLM judge against the same rubric. A no-context control was also run to verify that raw model knowledge alone is not enough for safe Xsolla integration work.
+- **No Context**: task prompt only.
+
+Each skill was run `k=3` times per variant, then judged by an Anthropic LLM judge against the same rubric.
 
 Main result:
 
 - **AI Kit**: `{ai['successes']}/{ai['runs']}` pass = **{pct(ai['success_rate'])}**
 - **Official docs**: `{docs['successes']}/{docs['runs']}` pass = **{pct(docs['success_rate'])}**
+- **No Context**: `{no_context['successes']}/{no_context['runs']}` pass = **{pct(no_context['success_rate'])}**
+
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, and `shop-setup`; official docs still win for `merchant-setup`; `payments-config` and `webhooks-impl` need product-quality remediation before they can be trusted.
 
 Generated: `{generated_at}`
@@ -219,7 +232,7 @@ Generated: `{generated_at}`
 |---|---|---|
 | AI Kit | User task + `SKILL.md` + references | Measures skill value |
 | Official docs | User task + official `developers.xsolla.com` docs corpus | Fair documentation baseline |
-| No context | User task only | Control group used only to validate that context is necessary |
+| No Context | User task only | Baseline for model behavior without skill or documentation context |
 
 ### Metrics
 
@@ -238,11 +251,9 @@ Generated: `{generated_at}`
 
 {render_variant_summary(rows)}
 
-Control check: the no-context baseline scored `{no_context['successes']}/{no_context['runs']}` pass = **{pct(no_context['success_rate'])}**. This confirms that the benchmark is measuring context quality, not only generic model capability.
-
 ## Skill Comparison
 
-This table keeps the benchmark focused on **AI Kit vs Official docs**. The no-context baseline is intentionally excluded from the winner calculation.
+This table compares all three variants on the same benchmark. Winner is selected between AI Kit and official docs because those are the two usable context strategies for production work.
 
 {render_skill_table(data)}
 
