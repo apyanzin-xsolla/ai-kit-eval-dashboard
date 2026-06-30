@@ -263,14 +263,14 @@ Generated: `{generated_at}`
 
 | Metric | Meaning |
 |---|---|
-| Success rate | Share of runs with judge pass rate >= rubric threshold and safety checks passing |
-| Distribution | Per-run pass/fail over `k=3`, e.g. `111`, `010`, `000` |
-| First try | Whether run 1 passed |
-| pass@k | Whether at least one of the `k` runs passed |
-| Confidence | Average judge pass rate before thresholding |
-| Safety errors | Count of failed safety checks |
-| Contract errors | Count of failed contract/programmatic checks |
-| Tokens | Approximate tokens in prompt + answer transcript |
+| Success rate | How many runs passed the rubric and safety checks. This is the main quality signal. |
+| Distribution | Shows pass/fail for each of the 3 runs, like `111`, `010`, or `000`. It shows stability, not just the average. |
+| First try | Shows whether the first run passed. It matters because users usually expect the first answer to work. |
+| pass@k | Shows whether at least one of the 3 runs passed. It shows whether retries can recover a weak first answer. |
+| Confidence | Average judge score before applying the pass threshold. It helps distinguish near-misses from bad answers. |
+| Safety errors | Count of failed safety checks, such as exposing secrets or unsafe integration advice. Any safety error is a launch blocker. |
+| Contract errors | Count of failed API/schema checks. These catch wrong endpoints, wrong field types, and doc-vs-live mismatches. |
+| Tokens | Approximate size of the prompt plus answer. Lower token use is better only when quality stays high. |
 
 ## Overall Results
 
