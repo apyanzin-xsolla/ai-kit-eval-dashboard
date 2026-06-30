@@ -163,7 +163,7 @@ Legend:
 
 1. 🟩 AI Kit
 2. 🟦 Official docs
-3. 🟨 No Context
+3. 🟥 No Context
 
 {chart}"""
 

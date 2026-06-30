@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, and `shop-setup`; official docs still win for `merchant-setup`; `payments-config` and `webhooks-impl` need product-quality remediation before they can be trusted.
 
-Generated: `2026-06-30 15:45 UTC`
+Generated: `2026-06-30 15:48 UTC`
 
 ## Methodology
 
@@ -83,7 +83,7 @@ Legend:
 
 1. 🟩 AI Kit
 2. 🟦 Official docs
-3. 🟨 No Context
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
@@ -103,7 +103,7 @@ Legend:
 
 1. 🟩 AI Kit
 2. 🟦 Official docs
-3. 🟨 No Context
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
@@ -123,7 +123,7 @@ Legend:
 
 1. 🟩 AI Kit
 2. 🟦 Official docs
-3. 🟨 No Context
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
@@ -143,7 +143,7 @@ Legend:
 
 1. 🟩 AI Kit
 2. 🟦 Official docs
-3. 🟨 No Context
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
@@ -163,7 +163,7 @@ Legend:
 
 1. 🟩 AI Kit
 2. 🟦 Official docs
-3. 🟨 No Context
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
@@ -183,7 +183,7 @@ Legend:
 
 1. 🟩 AI Kit
 2. 🟦 Official docs
-3. 🟨 No Context
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
@@ -203,7 +203,7 @@ Legend:
 
 1. 🟩 AI Kit
 2. 🟦 Official docs
-3. 🟨 No Context
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
