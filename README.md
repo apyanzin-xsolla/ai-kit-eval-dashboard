@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, and `shop-setup`; official docs still win for `merchant-setup`; `payments-config` and `webhooks-impl` need product-quality remediation before they can be trusted.
 
-Generated: `2026-06-30 15:26 UTC`
+Generated: `2026-06-30 15:34 UTC`
 
 ## Methodology
 
@@ -217,15 +217,16 @@ xychart-beta
 
 ### Outcome Map
 
-Measurement: winner by skill, comparing AI Kit and official docs success rate. Ties include cases where both variants failed.
+Measurement: winner by skill across AI Kit, official docs, and No Context success rate. All-fail means every variant scored 0%.
 
 ```mermaid
 flowchart LR
   A[Assessment outcome]
   A --> N1["AI Kit wins: catalog-design, login-setup, shop-setup"]
   A --> N2["Docs wins: merchant-setup"]
-  A --> N3["Both fail: payments-config, webhooks-impl"]
-  A --> N4["Tie: none"]
+  A --> N3["No Context wins: none"]
+  A --> N4["All fail: payments-config, webhooks-impl"]
+  A --> N5["Tie: none"]
 ```
 
 ## Key Findings

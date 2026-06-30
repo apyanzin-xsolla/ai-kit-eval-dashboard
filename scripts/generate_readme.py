@@ -173,19 +173,29 @@ def render_outcome_map(data: dict) -> str:
     groups = {
         "AI Kit wins": [],
         "Docs wins": [],
-        "Both fail": [],
+        "No Context wins": [],
+        "All fail": [],
         "Tie": [],
     }
     for skill in data["summary"]["skills"]:
         ai = get_row(rows, skill, "ai_kit")
         docs = get_row(rows, skill, "docs")
-        outcome = winner(ai, docs)
-        if ai["success_rate_pct"] == 0 and docs["success_rate_pct"] == 0:
-            groups["Both fail"].append(skill)
-        elif outcome == "AI Kit":
+        no_context = get_row(rows, skill, "no_context")
+        rates = {
+            "AI Kit": ai["success_rate_pct"] or 0,
+            "Docs": docs["success_rate_pct"] or 0,
+            "No Context": no_context["success_rate_pct"] or 0,
+        }
+        top_score = max(rates.values())
+        winners = [name for name, score in rates.items() if score == top_score]
+        if top_score == 0:
+            groups["All fail"].append(skill)
+        elif winners == ["AI Kit"]:
             groups["AI Kit wins"].append(skill)
-        elif outcome == "Official docs":
+        elif winners == ["Docs"]:
             groups["Docs wins"].append(skill)
+        elif winners == ["No Context"]:
+            groups["No Context wins"].append(skill)
         else:
             groups["Tie"].append(skill)
     lines = [
@@ -318,7 +328,7 @@ This table compares all three variants on the same benchmark. Winner is selected
 
 ### Outcome Map
 
-Measurement: winner by skill, comparing AI Kit and official docs success rate. Ties include cases where both variants failed.
+Measurement: winner by skill across AI Kit, official docs, and No Context success rate. All-fail means every variant scored 0%.
 
 {render_outcome_map(data)}
 
