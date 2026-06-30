@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, and `shop-setup`; official docs still win for `merchant-setup`; `payments-config` and `webhooks-impl` need product-quality remediation before they can be trusted.
 
-Generated: `2026-06-30 15:39 UTC`
+Generated: `2026-06-30 15:45 UTC`
 
 ## Methodology
 
@@ -81,9 +81,9 @@ Measurement: percent of runs that passed the rubric threshold (`pass_rate >= 95`
 
 Legend:
 
-1. AI Kit
-2. Official docs
-3. No Context
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟨 No Context
 
 ```mermaid
 xychart-beta
@@ -101,9 +101,9 @@ Measurement: whether the first run for each skill and variant passed, expressed 
 
 Legend:
 
-1. AI Kit
-2. Official docs
-3. No Context
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟨 No Context
 
 ```mermaid
 xychart-beta
@@ -121,9 +121,9 @@ Measurement: whether at least one of the `k=3` runs passed for each skill and va
 
 Legend:
 
-1. AI Kit
-2. Official docs
-3. No Context
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟨 No Context
 
 ```mermaid
 xychart-beta
@@ -141,9 +141,9 @@ Measurement: average judge pass rate before thresholding, by skill and variant.
 
 Legend:
 
-1. AI Kit
-2. Official docs
-3. No Context
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟨 No Context
 
 ```mermaid
 xychart-beta
@@ -161,9 +161,9 @@ Measurement: count of failed safety checks across `k=3` runs for each skill and 
 
 Legend:
 
-1. AI Kit
-2. Official docs
-3. No Context
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟨 No Context
 
 ```mermaid
 xychart-beta
@@ -181,9 +181,9 @@ Measurement: count of failed contract/programmatic checks across `k=3` runs for 
 
 Legend:
 
-1. AI Kit
-2. Official docs
-3. No Context
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟨 No Context
 
 ```mermaid
 xychart-beta
@@ -201,9 +201,9 @@ Measurement: approximate mean tokens in prompt plus answer transcript, by skill 
 
 Legend:
 
-1. AI Kit
-2. Official docs
-3. No Context
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟨 No Context
 
 ```mermaid
 xychart-beta
