@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, and `shop-setup`; official docs still win for `merchant-setup`; `payments-config` and `webhooks-impl` need product-quality remediation before they can be trusted.
 
-Generated: `2026-06-30 15:09 UTC`
+Generated: `2026-06-30 15:16 UTC`
 
 ## Methodology
 
@@ -77,6 +77,14 @@ This table compares all three variants on the same benchmark. Winner is selected
 
 ### Success Rate
 
+Measurement: percent of runs that passed the rubric threshold (`pass_rate >= 95`) and all safety checks.
+
+Legend:
+
+1. AI Kit
+2. Official docs
+3. No Context
+
 ```mermaid
 xychart-beta
     title "Success Rate by Skill"
@@ -89,6 +97,14 @@ xychart-beta
 
 ### Safety Errors
 
+Measurement: count of failed safety checks across `k=3` runs for each skill and variant.
+
+Legend:
+
+1. AI Kit
+2. Official docs
+3. No Context
+
 ```mermaid
 xychart-beta
     title "Safety Errors by Skill"
@@ -100,6 +116,8 @@ xychart-beta
 ```
 
 ### Outcome Map
+
+Measurement: winner by skill, comparing AI Kit and official docs success rate. Ties include cases where both variants failed.
 
 ```mermaid
 flowchart LR

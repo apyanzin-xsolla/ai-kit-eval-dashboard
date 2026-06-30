@@ -261,13 +261,31 @@ This table compares all three variants on the same benchmark. Winner is selected
 
 ### Success Rate
 
+Measurement: percent of runs that passed the rubric threshold (`pass_rate >= 95`) and all safety checks.
+
+Legend:
+
+1. AI Kit
+2. Official docs
+3. No Context
+
 {render_success_mermaid(data)}
 
 ### Safety Errors
 
+Measurement: count of failed safety checks across `k=3` runs for each skill and variant.
+
+Legend:
+
+1. AI Kit
+2. Official docs
+3. No Context
+
 {render_risk_mermaid(data)}
 
 ### Outcome Map
+
+Measurement: winner by skill, comparing AI Kit and official docs success rate. Ties include cases where both variants failed.
 
 {render_outcome_map(data)}
 
