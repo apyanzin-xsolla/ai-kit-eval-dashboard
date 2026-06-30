@@ -251,6 +251,24 @@ Generated: `{generated_at}`
 - Evidence level: agent transcript + LLM judge
 - Reliability: `{data['summary']['reliability']}`
 
+### Model Input Data
+
+| Input | Value |
+|---|---|
+| Provider | Anthropic Messages API |
+| Endpoint | `https://api.anthropic.com/v1/messages` |
+| Anthropic version header | `2023-06-01` |
+| Agent model | `claude-sonnet-4-6` |
+| Judge model | `claude-sonnet-4-6` |
+| Agent `max_tokens` | `4096` |
+| Judge `max_tokens` | `4096` |
+| Agent temperature | `0.2` |
+| Judge temperature | `0` |
+| Agent input per run | System instruction + task prompt + variant-specific context |
+| Judge input per run | Transcript + rubric checks + safety checks |
+
+`max_tokens` is the output cap we set for each Anthropic API call. The Anthropic API requires this field in the Messages request; for this assessment we used `4096` for both agent and judge calls.
+
 ### Variants
 
 | Variant | Context Given to Agent | Purpose |

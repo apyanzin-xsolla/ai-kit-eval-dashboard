@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, and `shop-setup`; official docs still win for `merchant-setup`; `payments-config` and `webhooks-impl` need product-quality remediation before they can be trusted.
 
-Generated: `2026-06-30 15:48 UTC`
+Generated: `2026-06-30 15:52 UTC`
 
 ## Methodology
 
@@ -30,6 +30,24 @@ Generated: `2026-06-30 15:48 UTC`
 - Total scored runs: `54`
 - Evidence level: agent transcript + LLM judge
 - Reliability: `scored`
+
+### Model Input Data
+
+| Input | Value |
+|---|---|
+| Provider | Anthropic Messages API |
+| Endpoint | `https://api.anthropic.com/v1/messages` |
+| Anthropic version header | `2023-06-01` |
+| Agent model | `claude-sonnet-4-6` |
+| Judge model | `claude-sonnet-4-6` |
+| Agent `max_tokens` | `4096` |
+| Judge `max_tokens` | `4096` |
+| Agent temperature | `0.2` |
+| Judge temperature | `0` |
+| Agent input per run | System instruction + task prompt + variant-specific context |
+| Judge input per run | Transcript + rubric checks + safety checks |
+
+`max_tokens` is the output cap we set for each Anthropic API call. The Anthropic API requires this field in the Messages request; for this assessment we used `4096` for both agent and judge calls.
 
 ### Variants
 
