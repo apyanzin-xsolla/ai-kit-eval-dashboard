@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, and `shop-setup`; official docs still win for `merchant-setup`; `payments-config` and `webhooks-impl` need product-quality remediation before they can be trusted.
 
-Generated: `2026-06-30 15:16 UTC`
+Generated: `2026-06-30 15:26 UTC`
 
 ## Methodology
 
@@ -95,6 +95,66 @@ xychart-beta
     bar [0, 0, 0, 0, 0, 0]
 ```
 
+### First-Try Success
+
+Measurement: whether the first run for each skill and variant passed, expressed as 0% or 100%.
+
+Legend:
+
+1. AI Kit
+2. Official docs
+3. No Context
+
+```mermaid
+xychart-beta
+    title "First-Try Success by Skill"
+    x-axis ["catalog", "login", "merchant", "payments", "shop", "webhooks"]
+    y-axis "First-try success (%)" 0 --> 100
+    bar [100, 100, 0, 0, 100, 0]
+    bar [0, 0, 100, 0, 100, 0]
+    bar [0, 0, 0, 0, 0, 0]
+```
+
+### pass@k
+
+Measurement: whether at least one of the `k=3` runs passed for each skill and variant.
+
+Legend:
+
+1. AI Kit
+2. Official docs
+3. No Context
+
+```mermaid
+xychart-beta
+    title "pass@k by Skill"
+    x-axis ["catalog", "login", "merchant", "payments", "shop", "webhooks"]
+    y-axis "pass@k (%)" 0 --> 100
+    bar [100, 100, 100, 0, 100, 0]
+    bar [100, 100, 100, 0, 100, 0]
+    bar [0, 0, 0, 0, 0, 0]
+```
+
+### Judge Confidence
+
+Measurement: average judge pass rate before thresholding, by skill and variant.
+
+Legend:
+
+1. AI Kit
+2. Official docs
+3. No Context
+
+```mermaid
+xychart-beta
+    title "Average Judge Confidence by Skill"
+    x-axis ["catalog", "login", "merchant", "payments", "shop", "webhooks"]
+    y-axis "Confidence (%)" 0 --> 100
+    bar [100.0, 100.0, 83.3, 50.0, 100.0, 82.3]
+    bar [93.3, 84.0, 100.0, 58.3, 93.3, 68.3]
+    bar [73.3, 64.0, 70.0, 50.0, 40.0, 63.0]
+```
+
 ### Safety Errors
 
 Measurement: count of failed safety checks across `k=3` runs for each skill and variant.
@@ -113,6 +173,46 @@ xychart-beta
     bar [0, 0, 2, 3, 0, 1]
     bar [0, 0, 0, 3, 1, 2]
     bar [0, 1, 0, 3, 1, 1]
+```
+
+### Contract Errors
+
+Measurement: count of failed contract/programmatic checks across `k=3` runs for each skill and variant.
+
+Legend:
+
+1. AI Kit
+2. Official docs
+3. No Context
+
+```mermaid
+xychart-beta
+    title "Contract Errors by Skill"
+    x-axis ["catalog", "login", "merchant", "payments", "shop", "webhooks"]
+    y-axis "Contract errors" 0 --> 3
+    bar [0, 0, 0, 0, 0, 0]
+    bar [0, 0, 0, 0, 0, 0]
+    bar [0, 0, 0, 0, 1, 0]
+```
+
+### Token Volume
+
+Measurement: approximate mean tokens in prompt plus answer transcript, by skill and variant.
+
+Legend:
+
+1. AI Kit
+2. Official docs
+3. No Context
+
+```mermaid
+xychart-beta
+    title "Mean Tokens by Skill"
+    x-axis ["catalog", "login", "merchant", "payments", "shop", "webhooks"]
+    y-axis "Mean tokens" 0 --> 3000
+    bar [2355, 2461.7, 819.7, 2356, 2711.7, 2516]
+    bar [2241.7, 2348.7, 1231.3, 1917, 2337.7, 2505.7]
+    bar [2247.3, 2255.3, 1157.7, 2106.3, 1573.3, 2304.7]
 ```
 
 ### Outcome Map
