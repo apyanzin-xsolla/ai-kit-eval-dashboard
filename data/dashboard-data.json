@@ -1,0 +1,587 @@
+{
+  "metadata": {
+    "methodology": "k runs x ai_kit/docs/no_context variants",
+    "success_rate_note": "distribution is shown explicitly; do not rely on a single-run average"
+  },
+  "summary": {
+    "total_runs": 54,
+    "scored_runs": 54,
+    "not_scored_runs": 0,
+    "skills": [
+      "catalog-design",
+      "login-setup",
+      "merchant-setup",
+      "payments-config",
+      "shop-setup",
+      "webhooks-impl"
+    ],
+    "variants": [
+      "ai_kit",
+      "docs",
+      "no_context"
+    ],
+    "contract_errors": 1,
+    "safety_errors": 18,
+    "reliability": "scored"
+  },
+  "leaderboard": [
+    {
+      "skill": "catalog-design",
+      "variant": "ai_kit",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 3,
+      "success_rate_pct": 100,
+      "success_distribution": [
+        1,
+        1,
+        1
+      ],
+      "first_try_success_rate_pct": 100,
+      "pass_at_k_pct": 100,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2355,
+      "tokens_distribution": [
+        2264,
+        2423,
+        2378
+      ],
+      "validated_confidence_mean": 100.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "catalog-design",
+      "variant": "docs",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 2,
+      "success_rate_pct": 66.7,
+      "success_distribution": [
+        0,
+        1,
+        1
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 100,
+      "success_rate_stddev_pct": 47.1,
+      "tokens_mean": 2241.7,
+      "tokens_distribution": [
+        2163,
+        2287,
+        2275
+      ],
+      "validated_confidence_mean": 93.3,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "catalog-design",
+      "variant": "no_context",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2247.3,
+      "tokens_distribution": [
+        2223,
+        2196,
+        2323
+      ],
+      "validated_confidence_mean": 73.3,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "login-setup",
+      "variant": "ai_kit",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 3,
+      "success_rate_pct": 100,
+      "success_distribution": [
+        1,
+        1,
+        1
+      ],
+      "first_try_success_rate_pct": 100,
+      "pass_at_k_pct": 100,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2461.7,
+      "tokens_distribution": [
+        2429,
+        2462,
+        2494
+      ],
+      "validated_confidence_mean": 100.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "login-setup",
+      "variant": "docs",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 1,
+      "success_rate_pct": 33.3,
+      "success_distribution": [
+        0,
+        1,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 100,
+      "success_rate_stddev_pct": 47.1,
+      "tokens_mean": 2348.7,
+      "tokens_distribution": [
+        2441,
+        2389,
+        2216
+      ],
+      "validated_confidence_mean": 84.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "login-setup",
+      "variant": "no_context",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2255.3,
+      "tokens_distribution": [
+        2223,
+        2362,
+        2181
+      ],
+      "validated_confidence_mean": 64.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 1,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "merchant-setup",
+      "variant": "ai_kit",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 1,
+      "success_rate_pct": 33.3,
+      "success_distribution": [
+        0,
+        1,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 100,
+      "success_rate_stddev_pct": 47.1,
+      "tokens_mean": 819.7,
+      "tokens_distribution": [
+        831,
+        782,
+        846
+      ],
+      "validated_confidence_mean": 83.3,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 2,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "merchant-setup",
+      "variant": "docs",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 3,
+      "success_rate_pct": 100,
+      "success_distribution": [
+        1,
+        1,
+        1
+      ],
+      "first_try_success_rate_pct": 100,
+      "pass_at_k_pct": 100,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 1231.3,
+      "tokens_distribution": [
+        1311,
+        1131,
+        1252
+      ],
+      "validated_confidence_mean": 100.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "merchant-setup",
+      "variant": "no_context",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 1157.7,
+      "tokens_distribution": [
+        1111,
+        1057,
+        1305
+      ],
+      "validated_confidence_mean": 70.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "payments-config",
+      "variant": "ai_kit",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2356,
+      "tokens_distribution": [
+        2239,
+        2047,
+        2782
+      ],
+      "validated_confidence_mean": 50.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 3,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "payments-config",
+      "variant": "docs",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 1917,
+      "tokens_distribution": [
+        2338,
+        1712,
+        1701
+      ],
+      "validated_confidence_mean": 58.3,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 3,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "payments-config",
+      "variant": "no_context",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2106.3,
+      "tokens_distribution": [
+        1889,
+        1998,
+        2432
+      ],
+      "validated_confidence_mean": 50.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 3,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "shop-setup",
+      "variant": "ai_kit",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 3,
+      "success_rate_pct": 100,
+      "success_distribution": [
+        1,
+        1,
+        1
+      ],
+      "first_try_success_rate_pct": 100,
+      "pass_at_k_pct": 100,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2711.7,
+      "tokens_distribution": [
+        2651,
+        2716,
+        2768
+      ],
+      "validated_confidence_mean": 100.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 0,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "shop-setup",
+      "variant": "docs",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 2,
+      "success_rate_pct": 66.7,
+      "success_distribution": [
+        1,
+        1,
+        0
+      ],
+      "first_try_success_rate_pct": 100,
+      "pass_at_k_pct": 100,
+      "success_rate_stddev_pct": 47.1,
+      "tokens_mean": 2337.7,
+      "tokens_distribution": [
+        2348,
+        2466,
+        2199
+      ],
+      "validated_confidence_mean": 93.3,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 1,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "shop-setup",
+      "variant": "no_context",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 1573.3,
+      "tokens_distribution": [
+        382,
+        2190,
+        2148
+      ],
+      "validated_confidence_mean": 40.0,
+      "clarifications": 0,
+      "corrections": 1,
+      "contract_errors": 1,
+      "safety_errors": 1,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "webhooks-impl",
+      "variant": "ai_kit",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2516,
+      "tokens_distribution": [
+        2576,
+        2398,
+        2574
+      ],
+      "validated_confidence_mean": 82.3,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 1,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "webhooks-impl",
+      "variant": "docs",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2505.7,
+      "tokens_distribution": [
+        2548,
+        2496,
+        2473
+      ],
+      "validated_confidence_mean": 68.3,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 2,
+      "api_contract_last_verified": null
+    },
+    {
+      "skill": "webhooks-impl",
+      "variant": "no_context",
+      "runs": 3,
+      "scored_runs": 3,
+      "not_scored_runs": 0,
+      "score_status": "scored",
+      "evidence_level": "agent_transcript+llm_judge",
+      "successes": 0,
+      "success_rate_pct": 0,
+      "success_distribution": [
+        0,
+        0,
+        0
+      ],
+      "first_try_success_rate_pct": 0,
+      "pass_at_k_pct": 0,
+      "success_rate_stddev_pct": 0.0,
+      "tokens_mean": 2304.7,
+      "tokens_distribution": [
+        2301,
+        2375,
+        2238
+      ],
+      "validated_confidence_mean": 63.0,
+      "clarifications": 0,
+      "corrections": 0,
+      "contract_errors": 0,
+      "safety_errors": 1,
+      "api_contract_last_verified": null
+    }
+  ]
+}
