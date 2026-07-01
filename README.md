@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, `headless-checkout-integration`, and `shop-setup`; official docs still win for `merchant-setup`; `webhooks-impl` needs product-quality remediation before it can be trusted.
 
-Generated: `2026-07-01 19:16 UTC`
+Generated: `2026-07-01 19:55 UTC`
 
 ## Methodology
 
@@ -93,11 +93,11 @@ This table compares all three variants on the same benchmark. Winner is selected
 | shop-setup | 100% `111` | 66.7% `110` | 0% `000` | AI Kit | 0 | 1 | 1 | docs safety risk |
 | webhooks-impl | 0% `000` | 0% `000` | 0% `000` | Tie | 1 | 2 | 1 | both fail, AI Kit safety risk, docs safety risk |
 
-## Graphs
+## Skills
 
-### Success Rate
+Each chart below is centered on one skill. The x-axis shows the metrics for that skill, and the three bars compare AI Kit, official docs, and No Context.
 
-Measurement: percent of runs that passed the rubric threshold (`pass_rate >= 95`) and all safety checks.
+All values are normalized to a 0–100 scale where higher is better. For safety and contract metrics, `100` means zero errors; for token efficiency, higher means fewer tokens relative to the largest run in this report.
 
 Legend:
 
@@ -105,134 +105,76 @@ Legend:
 2. 🟦 Official docs
 3. 🟥 No Context
 
+### catalog-design
+
 ```mermaid
 xychart-beta
-    title "Success Rate by Skill"
-    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
-    y-axis "Success rate (%)" 0 --> 100
-    bar [100, 100, 33.3, 100, 100, 0]
-    bar [66.7, 33.3, 100, 66.7, 66.7, 0]
-    bar [0, 0, 0, 0, 0, 0]
+    title "catalog-design: metrics by variant"
+    x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
+    y-axis "Normalized score, higher is better" 0 --> 100
+    bar [100, 100, 100, 100, 100, 100, 73.6]
+    bar [66.7, 0, 100, 93.3, 100, 100, 74.9]
+    bar [0, 0, 0, 73.3, 100, 100, 74.8]
 ```
 
-### First-Try Success
-
-Measurement: whether the first run for each skill and variant passed, expressed as 0% or 100%.
-
-Legend:
-
-1. 🟩 AI Kit
-2. 🟦 Official docs
-3. 🟥 No Context
+### login-setup
 
 ```mermaid
 xychart-beta
-    title "First-Try Success by Skill"
-    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
-    y-axis "First-try success (%)" 0 --> 100
-    bar [100, 100, 0, 100, 100, 0]
-    bar [0, 0, 100, 100, 100, 0]
-    bar [0, 0, 0, 0, 0, 0]
+    title "login-setup: metrics by variant"
+    x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
+    y-axis "Normalized score, higher is better" 0 --> 100
+    bar [100, 100, 100, 100, 100, 100, 72.4]
+    bar [33.3, 0, 100, 84, 100, 100, 73.7]
+    bar [0, 0, 0, 64, 66.7, 100, 74.7]
 ```
 
-### pass@k
-
-Measurement: whether at least one of the `k=3` runs passed for each skill and variant.
-
-Legend:
-
-1. 🟩 AI Kit
-2. 🟦 Official docs
-3. 🟥 No Context
+### merchant-setup
 
 ```mermaid
 xychart-beta
-    title "pass@k by Skill"
-    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
-    y-axis "pass@k (%)" 0 --> 100
-    bar [100, 100, 100, 100, 100, 0]
-    bar [100, 100, 100, 100, 100, 0]
-    bar [0, 0, 0, 0, 0, 0]
+    title "merchant-setup: metrics by variant"
+    x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
+    y-axis "Normalized score, higher is better" 0 --> 100
+    bar [33.3, 0, 100, 83.3, 33.3, 100, 90.8]
+    bar [100, 100, 100, 100, 100, 100, 86.2]
+    bar [0, 0, 0, 70, 100, 100, 87]
 ```
 
-### Judge Confidence
-
-Measurement: average judge pass rate before thresholding, by skill and variant.
-
-Legend:
-
-1. 🟩 AI Kit
-2. 🟦 Official docs
-3. 🟥 No Context
+### headless-checkout-integration
 
 ```mermaid
 xychart-beta
-    title "Average Judge Confidence by Skill"
-    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
-    y-axis "Confidence (%)" 0 --> 100
-    bar [100.0, 100.0, 83.3, 97.0, 100.0, 82.3]
-    bar [93.3, 84.0, 100.0, 63.6, 93.3, 68.3]
-    bar [73.3, 64.0, 70.0, 0, 40.0, 63.0]
+    title "headless-checkout-integration: metrics by variant"
+    x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
+    y-axis "Normalized score, higher is better" 0 --> 100
+    bar [100, 100, 100, 97, 100, 100, 0]
+    bar [66.7, 100, 100, 63.6, 100, 100, 8.5]
+    bar [0, 0, 0, 0, 100, 100, 96.5]
 ```
 
-### Safety Errors
-
-Measurement: count of failed safety checks across `k=3` runs for each skill and variant.
-
-Legend:
-
-1. 🟩 AI Kit
-2. 🟦 Official docs
-3. 🟥 No Context
+### shop-setup
 
 ```mermaid
 xychart-beta
-    title "Safety Errors by Skill"
-    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
-    y-axis "Safety errors" 0 --> 3
-    bar [0, 0, 2, 0, 0, 1]
-    bar [0, 0, 0, 0, 1, 2]
-    bar [0, 1, 0, 0, 1, 1]
+    title "shop-setup: metrics by variant"
+    x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
+    y-axis "Normalized score, higher is better" 0 --> 100
+    bar [100, 100, 100, 100, 100, 100, 69.6]
+    bar [66.7, 100, 100, 93.3, 66.7, 100, 73.8]
+    bar [0, 0, 0, 40, 66.7, 66.7, 82.4]
 ```
 
-### Contract Errors
-
-Measurement: count of failed contract/programmatic checks across `k=3` runs for each skill and variant.
-
-Legend:
-
-1. 🟩 AI Kit
-2. 🟦 Official docs
-3. 🟥 No Context
+### webhooks-impl
 
 ```mermaid
 xychart-beta
-    title "Contract Errors by Skill"
-    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
-    y-axis "Contract errors" 0 --> 3
-    bar [0, 0, 0, 0, 0, 0]
-    bar [0, 0, 0, 0, 0, 0]
-    bar [0, 0, 0, 0, 1, 0]
-```
-
-### Token Volume
-
-Measurement: approximate mean tokens in prompt plus answer transcript, by skill and variant.
-
-Legend:
-
-1. 🟩 AI Kit
-2. 🟦 Official docs
-3. 🟥 No Context
-
-```mermaid
-xychart-beta
-    title "Mean Tokens by Skill"
-    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
-    y-axis "Mean tokens" 0 --> 3000
-    bar [2355, 2461.7, 819.7, 8931.3, 2711.7, 2516]
-    bar [2241.7, 2348.7, 1231.3, 8169.3, 2337.7, 2505.7]
-    bar [2247.3, 2255.3, 1157.7, 317, 1573.3, 2304.7]
+    title "webhooks-impl: metrics by variant"
+    x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
+    y-axis "Normalized score, higher is better" 0 --> 100
+    bar [0, 0, 0, 82.3, 66.7, 100, 71.8]
+    bar [0, 0, 0, 68.3, 33.3, 100, 71.9]
+    bar [0, 0, 0, 63, 66.7, 100, 74.2]
 ```
 
 ### Outcome Map

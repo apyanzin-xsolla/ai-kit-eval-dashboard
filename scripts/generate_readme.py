@@ -115,57 +115,73 @@ def render_skill_table(data: dict) -> str:
     return "\n".join(lines)
 
 
-def render_success_mermaid(data: dict) -> str:
-    return render_metric_mermaid(
-        data,
-        title="Success Rate by Skill",
-        field="success_rate_pct",
-        y_label="Success rate (%)",
-        y_max=100,
-    )
+def safety_score(row: dict) -> float:
+    return max(0.0, 100.0 - ((row["safety_errors"] or 0) / max(row["runs"], 1) * 100.0))
 
 
-def render_metric_mermaid(data: dict, *, title: str, field: str, y_label: str, y_max: int | float) -> str:
-    rows = data["leaderboard"]
-    skills = data["summary"]["skills"]
-    labels = [skill.replace("-setup", "").replace("-design", "").replace("-config", "").replace("-impl", "") for skill in skills]
-    ai_values = [str(get_row(rows, skill, "ai_kit").get(field) or 0) for skill in skills]
-    docs_values = [str(get_row(rows, skill, "docs").get(field) or 0) for skill in skills]
-    no_context_values = [str(get_row(rows, skill, "no_context").get(field) or 0) for skill in skills]
-    quoted_labels = ", ".join(f'"{label}"' for label in labels)
+def contract_score(row: dict) -> float:
+    return max(0.0, 100.0 - ((row["contract_errors"] or 0) / max(row["runs"], 1) * 100.0))
+
+
+def token_efficiency_score(row: dict, max_tokens: float) -> float:
+    if max_tokens <= 0:
+        return 0.0
+    return max(0.0, 100.0 - ((row["tokens_mean"] or 0) / max_tokens * 100.0))
+
+
+def metric_values_for_skill(data: dict, skill: str, variant: str, max_tokens: float) -> list[str]:
+    row = get_row(data["leaderboard"], skill, variant)
+    values = [
+        row["success_rate_pct"] or 0,
+        row["first_try_success_rate_pct"] or 0,
+        row["pass_at_k_pct"] or 0,
+        row["validated_confidence_mean"] or 0,
+        safety_score(row),
+        contract_score(row),
+        token_efficiency_score(row, max_tokens),
+    ]
+    return [f"{value:.1f}".rstrip("0").rstrip(".") for value in values]
+
+
+def render_skill_metric_chart(data: dict, skill: str) -> str:
+    max_tokens = max((row["tokens_mean"] or 0) for row in data["leaderboard"])
+    metrics = [
+        "Success",
+        "First try",
+        "pass@k",
+        "Confidence",
+        "Safety",
+        "Contract",
+        "Token efficiency",
+    ]
+    quoted_metrics = ", ".join(f'"{metric}"' for metric in metrics)
+    ai_values = metric_values_for_skill(data, skill, "ai_kit", max_tokens)
+    docs_values = metric_values_for_skill(data, skill, "docs", max_tokens)
+    no_context_values = metric_values_for_skill(data, skill, "no_context", max_tokens)
     return f"""```mermaid
 xychart-beta
-    title "{title}"
-    x-axis [{quoted_labels}]
-    y-axis "{y_label}" 0 --> {y_max}
+    title "{skill}: metrics by variant"
+    x-axis [{quoted_metrics}]
+    y-axis "Normalized score, higher is better" 0 --> 100
     bar [{", ".join(ai_values)}]
     bar [{", ".join(docs_values)}]
     bar [{", ".join(no_context_values)}]
 ```"""
 
 
-def render_risk_mermaid(data: dict) -> str:
-    return render_metric_mermaid(
-        data,
-        title="Safety Errors by Skill",
-        field="safety_errors",
-        y_label="Safety errors",
-        y_max=3,
-    )
+def render_skill_metric_charts(data: dict) -> str:
+    blocks = []
+    for skill in data["summary"]["skills"]:
+        blocks.append(f"### {skill}\n\n{render_skill_metric_chart(data, skill)}")
+    return "\n\n".join(blocks)
 
 
-def render_graph_block(title: str, measurement: str, chart: str) -> str:
-    return f"""### {title}
-
-Measurement: {measurement}
-
-Legend:
+def render_legend() -> str:
+    return """Legend:
 
 1. 🟩 AI Kit
 2. 🟦 Official docs
-3. 🟥 No Context
-
-{chart}"""
+3. 🟥 No Context"""
 
 
 def render_outcome_map(data: dict) -> str:
@@ -302,49 +318,15 @@ This table compares all three variants on the same benchmark. Winner is selected
 
 {render_skill_table(data)}
 
-## Graphs
+## Skills
 
-{render_graph_block(
-    "Success Rate",
-    "percent of runs that passed the rubric threshold (`pass_rate >= 95`) and all safety checks.",
-    render_success_mermaid(data),
-)}
+Each chart below is centered on one skill. The x-axis shows the metrics for that skill, and the three bars compare AI Kit, official docs, and No Context.
 
-{render_graph_block(
-    "First-Try Success",
-    "whether the first run for each skill and variant passed, expressed as 0% or 100%.",
-    render_metric_mermaid(data, title="First-Try Success by Skill", field="first_try_success_rate_pct", y_label="First-try success (%)", y_max=100),
-)}
+All values are normalized to a 0–100 scale where higher is better. For safety and contract metrics, `100` means zero errors; for token efficiency, higher means fewer tokens relative to the largest run in this report.
 
-{render_graph_block(
-    "pass@k",
-    "whether at least one of the `k=3` runs passed for each skill and variant.",
-    render_metric_mermaid(data, title="pass@k by Skill", field="pass_at_k_pct", y_label="pass@k (%)", y_max=100),
-)}
+{render_legend()}
 
-{render_graph_block(
-    "Judge Confidence",
-    "average judge pass rate before thresholding, by skill and variant.",
-    render_metric_mermaid(data, title="Average Judge Confidence by Skill", field="validated_confidence_mean", y_label="Confidence (%)", y_max=100),
-)}
-
-{render_graph_block(
-    "Safety Errors",
-    "count of failed safety checks across `k=3` runs for each skill and variant.",
-    render_risk_mermaid(data),
-)}
-
-{render_graph_block(
-    "Contract Errors",
-    "count of failed contract/programmatic checks across `k=3` runs for each skill and variant.",
-    render_metric_mermaid(data, title="Contract Errors by Skill", field="contract_errors", y_label="Contract errors", y_max=3),
-)}
-
-{render_graph_block(
-    "Token Volume",
-    "approximate mean tokens in prompt plus answer transcript, by skill and variant.",
-    render_metric_mermaid(data, title="Mean Tokens by Skill", field="tokens_mean", y_label="Mean tokens", y_max=3000),
-)}
+{render_skill_metric_charts(data)}
 
 ### Outcome Map
 
