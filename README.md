@@ -1,83 +1,103 @@
-# Headless Checkout Skill Evaluation
+# Xsolla AI Kit Skill Evaluation
 
 ## TL;DR
 
-We tested the current `headless-checkout-integration` skill from the latest `xsolla-ai-kit` repository.
-The expected result was a runnable sandbox Headless Checkout implementation, not just a written explanation.
+We evaluated 6 `xsolla-ai-kit` skills using the current harness algorithm.
+
+- **AI Kit**: task prompt + `SKILL.md` + skill references.
+- **Official docs**: task prompt + curated `developers.xsolla.com` corpus.
+- **No Context**: task prompt only.
+
+Each skill was run `k=3` times per variant, then judged by an Anthropic LLM judge against the same rubric.
 
 Main result:
 
-- **AI Kit**: `3/3` pass = **100%**
-- **Official docs**: `2/3` pass = **66.7%**
-- **No Context**: `0/3` pass = **0%**
+- **AI Kit**: `13/18` pass = **72.2%**
+- **Official docs**: `10/18` pass = **55.6%**
+- **No Context**: `0/18` pass = **0%**
 
-Conclusion: AI Kit produced the strongest result for this use case. It generated complete runnable artifacts more reliably than official docs or no-context prompting.
+Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, `headless-checkout-integration`, and `shop-setup`; official docs still win for `merchant-setup`; `webhooks-impl` needs product-quality remediation before it can be trusted.
 
-Generated: `2026-07-01 19:08 UTC`
+Generated: `2026-07-01 19:16 UTC`
 
-## What We Tested
+## Methodology
 
-Use case: **integrate Xsolla Headless Checkout into a web app and complete a sandbox credit-card payment flow**.
+### Run Matrix
 
-Expected implementation:
+- Skills: `catalog-design, login-setup, merchant-setup, headless-checkout-integration, shop-setup, webhooks-impl`
+- Variants: `ai_kit`, `docs`, `no_context`
+- Repetitions: `k=3`
+- Total scored runs: `54`
+- Evidence level: agent transcript + LLM judge
+- Reliability: `scored`
 
-- install and initialize `@xsolla/pay-station-sdk` with `sandbox: true`;
-- safely get and hand off a short-lived payment token;
-- render payment method selection;
-- build the card form from server-driven `form.fields`;
-- call `form.activate()` after secure fields are mounted;
-- handle `onNextAction` branches: `show_fields`, `show_errors`, `redirect`, `3DS`, and `check_status`;
-- implement a return/status page using `psdk-status` or `getStatus()`;
-- include validation for three sandbox card paths:
-  - `4111111111111111` — no 3DS;
-  - `4111111111111152` — 3DS via acquirer redirect;
-  - `4423610000000007` — 3DS via external MPI.
+### Model Input Data
 
-## How We Tested
-
-We ran the same task in three variants:
-
-| Variant | Input Context |
+| Input | Value |
 |---|---|
-| AI Kit | Task prompt + `headless-checkout-integration/SKILL.md` + references |
-| Official docs | Task prompt + official Xsolla Headless Checkout documentation |
-| No Context | Task prompt only |
+| Provider | Anthropic Messages API |
+| Endpoint | `https://api.anthropic.com/v1/messages` |
+| Anthropic version header | `2023-06-01` |
+| Agent model | `claude-sonnet-4-6` |
+| Judge model | `claude-sonnet-4-6` |
+| Agent `max_tokens` | `4096` standard eval; `16000` for Headless Checkout artifact eval |
+| Judge `max_tokens` | `4096` standard eval; `6000` for Headless Checkout artifact eval |
+| Agent temperature | `0.2` |
+| Judge temperature | `0` |
+| Agent input per run | System instruction + task prompt + variant-specific context |
+| Judge input per run | Transcript + rubric checks + safety checks |
 
-Each variant ran `k=3` times. Every run had to generate real project files, then pass both automated code checks and an LLM judge.
+`max_tokens` is the output cap we set for each Anthropic API call. The Anthropic API requires this field in the Messages request.
 
-## Evaluation Algorithm
+For `headless-checkout-integration`, the payment skill was tested with the stronger artifact-based flow: the agent had to generate runnable project files and pass automated code checks in addition to the LLM judge.
 
-```mermaid
-flowchart LR
-  A[Test prompt] --> B[Run agent 3 times per variant]
-  B --> C[Generated project files]
-  C --> D[Programmatic code checks]
-  C --> E[LLM judge rubric]
-  D --> F[Pass/fail]
-  E --> F
-  F --> G[Aggregate success rate, confidence, errors, tokens]
-```
+### Variants
 
-## Metrics
+| Variant | Context Given to Agent | Purpose |
+|---|---|---|
+| AI Kit | User task + `SKILL.md` + references | Measures skill value |
+| Official docs | User task + official `developers.xsolla.com` docs corpus | Fair documentation baseline |
+| No Context | User task only | Baseline for model behavior without skill or documentation context |
+
+### Metrics
 
 | Metric | Meaning |
 |---|---|
-| Success rate | How many runs passed both the code checks and judge rubric. This is the main quality signal. |
-| Distribution | Shows pass/fail for each of the 3 runs, like `111` or `110`. It shows stability, not just the average. |
-| Judge confidence | Average judge score before thresholding. It shows how close failed runs were to passing. |
-| Safety errors | Count of failed safety checks, such as exposing API keys. Any safety error is a launch risk. |
-| Contract errors | Count of failed required artifact/code checks. These show missing implementation pieces. |
-| Avg tokens | Approximate size of prompt plus answer. Lower is better only when quality remains high. |
+| Success rate | How many runs passed the rubric and safety checks. This is the main quality signal. |
+| Distribution | Shows pass/fail for each of the 3 runs, like `111`, `010`, or `000`. It shows stability, not just the average. |
+| First try | Shows whether the first run passed. It matters because users usually expect the first answer to work. |
+| pass@k | Shows whether at least one of the 3 runs passed. It shows whether retries can recover a weak first answer. |
+| Confidence | Average judge score before applying the pass threshold. It helps distinguish near-misses from bad answers. |
+| Safety errors | Count of failed safety checks, such as exposing secrets or unsafe integration advice. Any safety error is a launch blocker. |
+| Contract errors | Count of failed API/schema checks. These catch wrong endpoints, wrong field types, and doc-vs-live mismatches. |
+| Tokens | Approximate size of the prompt plus answer. Lower token use is better only when quality stays high. |
 
-## Results
+## Overall Results
 
-| Variant | Pass | Success Rate | Distribution | Judge Confidence | Safety Errors | Contract Errors | Avg Tokens |
-|---|---:|---:|---|---:|---:|---:|---:|
-| AI Kit | 3/3 | 100% | `111` | 97% | 0 | 0 | 8931.3 |
-| Official docs | 2/3 | 66.7% | `110` | 63.6% | 0 | 0 | 8169.3 |
-| No Context | 0/3 | 0% | `000` | 0% | 0 | 0 | 317 |
+| Variant | Pass | Success Rate | Avg Confidence | Safety Errors | Contract Errors | Avg Tokens |
+|---|---:|---:|---:|---:|---:|---:|
+| AI Kit | 13/18 | 72.2% | 93.8% | 3 | 0 | 3299 |
+| Official docs | 10/18 | 55.6% | 83.8% | 3 | 0 | 3139 |
+| No context | 0/18 | 0% | 51.7% | 3 | 1 | 1643 |
 
-## Visual Summary
+## Skill Comparison
+
+This table compares all three variants on the same benchmark. Winner is selected between AI Kit and official docs because those are the two usable context strategies for production work.
+
+| Skill | AI Kit | Official Docs | No Context | Winner | AI Kit Safety | Docs Safety | No Context Safety | Notes |
+|---|---:|---:|---:|---|---:|---:|---:|---|
+| catalog-design | 100% `111` | 66.7% `011` | 0% `000` | AI Kit | 0 | 0 | 0 | - |
+| login-setup | 100% `111` | 33.3% `010` | 0% `000` | AI Kit | 0 | 0 | 1 | - |
+| merchant-setup | 33.3% `010` | 100% `111` | 0% `000` | Official docs | 2 | 0 | 0 | AI Kit safety risk |
+| headless-checkout-integration | 100% `111` | 66.7% `110` | 0% `000` | AI Kit | 0 | 0 | 0 | artifact-based eval |
+| shop-setup | 100% `111` | 66.7% `110` | 0% `000` | AI Kit | 0 | 1 | 1 | docs safety risk |
+| webhooks-impl | 0% `000` | 0% `000` | 0% `000` | Tie | 1 | 2 | 1 | both fail, AI Kit safety risk, docs safety risk |
+
+## Graphs
+
+### Success Rate
+
+Measurement: percent of runs that passed the rubric threshold (`pass_rate >= 95`) and all safety checks.
 
 Legend:
 
@@ -85,55 +105,165 @@ Legend:
 2. 🟦 Official docs
 3. 🟥 No Context
 
-### Success Rate
+```mermaid
+xychart-beta
+    title "Success Rate by Skill"
+    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
+    y-axis "Success rate (%)" 0 --> 100
+    bar [100, 100, 33.3, 100, 100, 0]
+    bar [66.7, 33.3, 100, 66.7, 66.7, 0]
+    bar [0, 0, 0, 0, 0, 0]
+```
 
-Measurement: percent of runs that passed the full artifact-based evaluation.
+### First-Try Success
+
+Measurement: whether the first run for each skill and variant passed, expressed as 0% or 100%.
+
+Legend:
+
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
-    title "Headless Checkout Success Rate"
-    x-axis ["AI Kit", "Official docs", "No Context"]
-    y-axis "Success rate (%)" 0 --> 100
-    bar [100, 66.7, 0]
+    title "First-Try Success by Skill"
+    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
+    y-axis "First-try success (%)" 0 --> 100
+    bar [100, 100, 0, 100, 100, 0]
+    bar [0, 0, 100, 100, 100, 0]
+    bar [0, 0, 0, 0, 0, 0]
+```
+
+### pass@k
+
+Measurement: whether at least one of the `k=3` runs passed for each skill and variant.
+
+Legend:
+
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟥 No Context
+
+```mermaid
+xychart-beta
+    title "pass@k by Skill"
+    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
+    y-axis "pass@k (%)" 0 --> 100
+    bar [100, 100, 100, 100, 100, 0]
+    bar [100, 100, 100, 100, 100, 0]
+    bar [0, 0, 0, 0, 0, 0]
 ```
 
 ### Judge Confidence
 
-Measurement: average judge pass rate before thresholding.
+Measurement: average judge pass rate before thresholding, by skill and variant.
+
+Legend:
+
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
-    title "Headless Checkout Judge Confidence"
-    x-axis ["AI Kit", "Official docs", "No Context"]
+    title "Average Judge Confidence by Skill"
+    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
     y-axis "Confidence (%)" 0 --> 100
-    bar [97.0, 63.6, 0]
+    bar [100.0, 100.0, 83.3, 97.0, 100.0, 82.3]
+    bar [93.3, 84.0, 100.0, 63.6, 93.3, 68.3]
+    bar [73.3, 64.0, 70.0, 0, 40.0, 63.0]
+```
+
+### Safety Errors
+
+Measurement: count of failed safety checks across `k=3` runs for each skill and variant.
+
+Legend:
+
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟥 No Context
+
+```mermaid
+xychart-beta
+    title "Safety Errors by Skill"
+    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
+    y-axis "Safety errors" 0 --> 3
+    bar [0, 0, 2, 0, 0, 1]
+    bar [0, 0, 0, 0, 1, 2]
+    bar [0, 1, 0, 0, 1, 1]
+```
+
+### Contract Errors
+
+Measurement: count of failed contract/programmatic checks across `k=3` runs for each skill and variant.
+
+Legend:
+
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟥 No Context
+
+```mermaid
+xychart-beta
+    title "Contract Errors by Skill"
+    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
+    y-axis "Contract errors" 0 --> 3
+    bar [0, 0, 0, 0, 0, 0]
+    bar [0, 0, 0, 0, 0, 0]
+    bar [0, 0, 0, 0, 1, 0]
 ```
 
 ### Token Volume
 
-Measurement: approximate mean tokens in prompt plus answer transcript.
+Measurement: approximate mean tokens in prompt plus answer transcript, by skill and variant.
+
+Legend:
+
+1. 🟩 AI Kit
+2. 🟦 Official docs
+3. 🟥 No Context
 
 ```mermaid
 xychart-beta
-    title "Headless Checkout Token Volume"
-    x-axis ["AI Kit", "Official docs", "No Context"]
-    y-axis "Mean tokens" 0 --> 10000
-    bar [8931.3, 8169.3, 317]
+    title "Mean Tokens by Skill"
+    x-axis ["catalog", "login", "merchant", "headless-checkout-integration", "shop", "webhooks"]
+    y-axis "Mean tokens" 0 --> 3000
+    bar [2355, 2461.7, 819.7, 8931.3, 2711.7, 2516]
+    bar [2241.7, 2348.7, 1231.3, 8169.3, 2337.7, 2505.7]
+    bar [2247.3, 2255.3, 1157.7, 317, 1573.3, 2304.7]
 ```
 
-## What We Got
+### Outcome Map
 
-AI Kit passed all three runs. The official docs baseline passed two out of three runs. The no-context baseline passed zero runs.
+Measurement: winner by skill across AI Kit, official docs, and No Context success rate. All-fail means every variant scored 0%.
 
-This means the new skill materially improves the agent's ability to produce a complete sandbox Headless Checkout implementation, especially when the eval checks generated files instead of only prose.
+```mermaid
+flowchart LR
+  A[Assessment outcome]
+  A --> N1["AI Kit wins: catalog-design, login-setup, headless-checkout-integration, shop-setup"]
+  A --> N2["Docs wins: merchant-setup"]
+  A --> N3["No Context wins: none"]
+  A --> N4["All fail: webhooks-impl"]
+  A --> N5["Tie: none"]
+```
+
+## Key Findings
+
+1. `catalog-design`, `login-setup`, and `shop-setup` passed all AI Kit runs (`3/3`) and beat the official docs baseline.
+2. `merchant-setup` performed better with official docs (`3/3`) than with AI Kit (`1/3`), indicating the skill needs tightening around credential safety and setup flow.
+3. `headless-checkout-integration` replaced the old `payments-config` result and passed all AI Kit artifact-based runs (`3/3`), while official docs passed `2/3`.
+4. `webhooks-impl` failed across all variants. The AI Kit skill has useful content but did not reach the strict rubric threshold, so it needs rubric-aligned rewrite or deeper handler examples.
+5. The no-context control failed every run (`0/18`), so context quality is the core variable in this assessment rather than generic model capability.
 
 ## Files
 
-- `data/dashboard-data.json` — machine-readable scored result.
+- `data/dashboard-data.json` — machine-readable scored results.
 - `data/ai-kit-eval-report.md` — raw harness report.
 - `scripts/generate_readme.py` — regenerates this README from `data/dashboard-data.json`.
 
-## Regenerate
+## Re-generate README
 
 ```bash
 python3 scripts/generate_readme.py
