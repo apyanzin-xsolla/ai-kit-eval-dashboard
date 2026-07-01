@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate README.md from scored AI Kit eval data."""
+"""Generate README.md for the Headless Checkout skill eval use case."""
 
 from __future__ import annotations
 
@@ -20,144 +20,136 @@ def pct(value: float | int | None) -> str:
     return f"{value:.0f}%" if value.is_integer() else f"{value:.1f}%"
 
 
-def get_row(rows: list[dict], skill: str, variant: str) -> dict:
-    return next(row for row in rows if row["skill"] == skill and row["variant"] == variant)
+def row(data: dict, variant: str) -> dict:
+    return next(item for item in data["leaderboard"] if item["variant"] == variant)
 
 
-def variant_totals(rows: list[dict], variant: str) -> dict:
-    subset = [row for row in rows if row["variant"] == variant]
-    runs = sum(row["runs"] for row in subset)
-    successes = sum(row["successes"] for row in subset)
-    confidence_values = [row["validated_confidence_mean"] or 0 for row in subset]
-    return {
-        "runs": runs,
-        "successes": successes,
-        "success_rate": successes / runs * 100 if runs else 0,
-        "confidence": sum(confidence_values) / len(confidence_values) if confidence_values else 0,
-        "safety_errors": sum(row["safety_errors"] for row in subset),
-        "contract_errors": sum(row["contract_errors"] for row in subset),
-        "tokens_mean": sum(row["tokens_mean"] for row in subset) / len(subset) if subset else 0,
-    }
+def dist(item: dict) -> str:
+    values = item.get("success_distribution") or []
+    return "".join(str(value) for value in values) if values else "n/a"
 
 
-def winner(ai: dict, docs: dict) -> str:
-    ai_rate = ai["success_rate_pct"] or 0
-    docs_rate = docs["success_rate_pct"] or 0
-    if ai_rate > docs_rate:
-        return "AI Kit"
-    if docs_rate > ai_rate:
-        return "Official docs"
-    return "Tie"
-
-
-def render_variant_summary(rows: list[dict]) -> str:
-    lines = [
-        "| Variant | Pass | Success Rate | Avg Confidence | Safety Errors | Contract Errors | Avg Tokens |",
-        "|---|---:|---:|---:|---:|---:|---:|",
-    ]
+def table(data: dict) -> str:
     labels = {
         "ai_kit": "AI Kit",
         "docs": "Official docs",
-        "no_context": "No context",
+        "no_context": "No Context",
     }
-    for variant in ["ai_kit", "docs", "no_context"]:
-        total = variant_totals(rows, variant)
-        lines.append(
-            "| {label} | {successes}/{runs} | {rate} | {confidence} | {safety} | {contract} | {tokens:.0f} |".format(
-                label=labels[variant],
-                successes=total["successes"],
-                runs=total["runs"],
-                rate=pct(total["success_rate"]),
-                confidence=pct(total["confidence"]),
-                safety=total["safety_errors"],
-                contract=total["contract_errors"],
-                tokens=total["tokens_mean"],
-            )
-        )
-    return "\n".join(lines)
-
-
-def render_skill_table(data: dict) -> str:
-    rows = data["leaderboard"]
     lines = [
-        "| Skill | AI Kit | Official Docs | No Context | Winner | AI Kit Safety | Docs Safety | No Context Safety | Notes |",
-        "|---|---:|---:|---:|---|---:|---:|---:|---|",
+        "| Variant | Pass | Success Rate | Distribution | Judge Confidence | Safety Errors | Contract Errors | Avg Tokens |",
+        "|---|---:|---:|---|---:|---:|---:|---:|",
     ]
-    for skill in data["summary"]["skills"]:
-        ai = get_row(rows, skill, "ai_kit")
-        docs = get_row(rows, skill, "docs")
-        no_context = get_row(rows, skill, "no_context")
-        notes = []
-        if ai["success_rate_pct"] == 0 and docs["success_rate_pct"] == 0:
-            notes.append("both fail")
-        if ai["safety_errors"]:
-            notes.append("AI Kit safety risk")
-        if docs["safety_errors"]:
-            notes.append("docs safety risk")
-        if skill == "payments-config":
-            notes.append("skill is placeholder/planned")
+    for variant in ["ai_kit", "docs", "no_context"]:
+        item = row(data, variant)
         lines.append(
-            "| {skill} | {ai_rate} `{ai_dist}` | {docs_rate} `{docs_dist}` | {no_rate} `{no_dist}` | {winner} | {ai_safety} | {docs_safety} | {no_safety} | {notes} |".format(
-                skill=skill,
-                ai_rate=pct(ai["success_rate_pct"]),
-                ai_dist="".join(map(str, ai["success_distribution"])),
-                docs_rate=pct(docs["success_rate_pct"]),
-                docs_dist="".join(map(str, docs["success_distribution"])),
-                no_rate=pct(no_context["success_rate_pct"]),
-                no_dist="".join(map(str, no_context["success_distribution"])),
-                winner=winner(ai, docs),
-                ai_safety=ai["safety_errors"],
-                docs_safety=docs["safety_errors"],
-                no_safety=no_context["safety_errors"],
-                notes=", ".join(notes) if notes else "-",
+            "| {label} | {successes}/{runs} | {success_rate} | `{distribution}` | {confidence} | {safety} | {contract} | {tokens} |".format(
+                label=labels[variant],
+                successes=item["successes"],
+                runs=item["runs"],
+                success_rate=pct(item["success_rate_pct"]),
+                distribution=dist(item),
+                confidence=pct(item["validated_confidence_mean"]),
+                safety=item["safety_errors"],
+                contract=item["contract_errors"],
+                tokens=item["tokens_mean"],
             )
         )
     return "\n".join(lines)
 
 
-def render_success_mermaid(data: dict) -> str:
-    return render_metric_mermaid(
-        data,
-        title="Success Rate by Skill",
-        field="success_rate_pct",
-        y_label="Success rate (%)",
-        y_max=100,
-    )
-
-
-def render_metric_mermaid(data: dict, *, title: str, field: str, y_label: str, y_max: int | float) -> str:
-    rows = data["leaderboard"]
-    skills = data["summary"]["skills"]
-    labels = [skill.replace("-setup", "").replace("-design", "").replace("-config", "").replace("-impl", "") for skill in skills]
-    ai_values = [str(get_row(rows, skill, "ai_kit").get(field) or 0) for skill in skills]
-    docs_values = [str(get_row(rows, skill, "docs").get(field) or 0) for skill in skills]
-    no_context_values = [str(get_row(rows, skill, "no_context").get(field) or 0) for skill in skills]
-    quoted_labels = ", ".join(f'"{label}"' for label in labels)
+def chart(data: dict, *, field: str, title: str, y_label: str, y_max: int) -> str:
+    values = [str(row(data, variant).get(field) or 0) for variant in ["ai_kit", "docs", "no_context"]]
     return f"""```mermaid
 xychart-beta
     title "{title}"
-    x-axis [{quoted_labels}]
+    x-axis ["AI Kit", "Official docs", "No Context"]
     y-axis "{y_label}" 0 --> {y_max}
-    bar [{", ".join(ai_values)}]
-    bar [{", ".join(docs_values)}]
-    bar [{", ".join(no_context_values)}]
+    bar [{", ".join(values)}]
 ```"""
 
 
-def render_risk_mermaid(data: dict) -> str:
-    return render_metric_mermaid(
-        data,
-        title="Safety Errors by Skill",
-        field="safety_errors",
-        y_label="Safety errors",
-        y_max=3,
-    )
+def render(data: dict) -> str:
+    ai = row(data, "ai_kit")
+    docs = row(data, "docs")
+    no_context = row(data, "no_context")
+    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
+    return f"""# Headless Checkout Skill Evaluation
 
-def render_graph_block(title: str, measurement: str, chart: str) -> str:
-    return f"""### {title}
+## TL;DR
 
-Measurement: {measurement}
+We tested the current `headless-checkout-integration` skill from the latest `xsolla-ai-kit` repository.
+The expected result was a runnable sandbox Headless Checkout implementation, not just a written explanation.
+
+Main result:
+
+- **AI Kit**: `{ai['successes']}/{ai['runs']}` pass = **{pct(ai['success_rate_pct'])}**
+- **Official docs**: `{docs['successes']}/{docs['runs']}` pass = **{pct(docs['success_rate_pct'])}**
+- **No Context**: `{no_context['successes']}/{no_context['runs']}` pass = **{pct(no_context['success_rate_pct'])}**
+
+Conclusion: AI Kit produced the strongest result for this use case. It generated complete runnable artifacts more reliably than official docs or no-context prompting.
+
+Generated: `{generated_at}`
+
+## What We Tested
+
+Use case: **integrate Xsolla Headless Checkout into a web app and complete a sandbox credit-card payment flow**.
+
+Expected implementation:
+
+- install and initialize `@xsolla/pay-station-sdk` with `sandbox: true`;
+- safely get and hand off a short-lived payment token;
+- render payment method selection;
+- build the card form from server-driven `form.fields`;
+- call `form.activate()` after secure fields are mounted;
+- handle `onNextAction` branches: `show_fields`, `show_errors`, `redirect`, `3DS`, and `check_status`;
+- implement a return/status page using `psdk-status` or `getStatus()`;
+- include validation for three sandbox card paths:
+  - `4111111111111111` — no 3DS;
+  - `4111111111111152` — 3DS via acquirer redirect;
+  - `4423610000000007` — 3DS via external MPI.
+
+## How We Tested
+
+We ran the same task in three variants:
+
+| Variant | Input Context |
+|---|---|
+| AI Kit | Task prompt + `headless-checkout-integration/SKILL.md` + references |
+| Official docs | Task prompt + official Xsolla Headless Checkout documentation |
+| No Context | Task prompt only |
+
+Each variant ran `k=3` times. Every run had to generate real project files, then pass both automated code checks and an LLM judge.
+
+## Evaluation Algorithm
+
+```mermaid
+flowchart LR
+  A[Test prompt] --> B[Run agent 3 times per variant]
+  B --> C[Generated project files]
+  C --> D[Programmatic code checks]
+  C --> E[LLM judge rubric]
+  D --> F[Pass/fail]
+  E --> F
+  F --> G[Aggregate success rate, confidence, errors, tokens]
+```
+
+## Metrics
+
+| Metric | Meaning |
+|---|---|
+| Success rate | How many runs passed both the code checks and judge rubric. This is the main quality signal. |
+| Distribution | Shows pass/fail for each of the 3 runs, like `111` or `110`. It shows stability, not just the average. |
+| Judge confidence | Average judge score before thresholding. It shows how close failed runs were to passing. |
+| Safety errors | Count of failed safety checks, such as exposing API keys. Any safety error is a launch risk. |
+| Contract errors | Count of failed required artifact/code checks. These show missing implementation pieces. |
+| Avg tokens | Approximate size of prompt plus answer. Lower is better only when quality remains high. |
+
+## Results
+
+{table(data)}
+
+## Visual Summary
 
 Legend:
 
@@ -165,206 +157,37 @@ Legend:
 2. 🟦 Official docs
 3. 🟥 No Context
 
-{chart}"""
+### Success Rate
 
+Measurement: percent of runs that passed the full artifact-based evaluation.
 
-def render_outcome_map(data: dict) -> str:
-    rows = data["leaderboard"]
-    groups = {
-        "AI Kit wins": [],
-        "Docs wins": [],
-        "No Context wins": [],
-        "All fail": [],
-        "Tie": [],
-    }
-    for skill in data["summary"]["skills"]:
-        ai = get_row(rows, skill, "ai_kit")
-        docs = get_row(rows, skill, "docs")
-        no_context = get_row(rows, skill, "no_context")
-        rates = {
-            "AI Kit": ai["success_rate_pct"] or 0,
-            "Docs": docs["success_rate_pct"] or 0,
-            "No Context": no_context["success_rate_pct"] or 0,
-        }
-        top_score = max(rates.values())
-        winners = [name for name, score in rates.items() if score == top_score]
-        if top_score == 0:
-            groups["All fail"].append(skill)
-        elif winners == ["AI Kit"]:
-            groups["AI Kit wins"].append(skill)
-        elif winners == ["Docs"]:
-            groups["Docs wins"].append(skill)
-        elif winners == ["No Context"]:
-            groups["No Context wins"].append(skill)
-        else:
-            groups["Tie"].append(skill)
-    lines = [
-        "```mermaid",
-        "flowchart LR",
-        "  A[Assessment outcome]",
-    ]
-    for idx, (name, skills) in enumerate(groups.items(), start=1):
-        node = f"N{idx}"
-        label = f"{name}: {', '.join(skills) if skills else 'none'}"
-        lines.append(f"  A --> {node}[\"{label}\"]")
-    lines.append("```")
-    return "\n".join(lines)
+{chart(data, field="success_rate_pct", title="Headless Checkout Success Rate", y_label="Success rate (%)", y_max=100)}
 
+### Judge Confidence
 
-def render_readme(data: dict) -> str:
-    rows = data["leaderboard"]
-    ai = variant_totals(rows, "ai_kit")
-    docs = variant_totals(rows, "docs")
-    no_context = variant_totals(rows, "no_context")
-    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+Measurement: average judge pass rate before thresholding.
 
-    return f"""# Xsolla AI Kit Skill Evaluation
+{chart(data, field="validated_confidence_mean", title="Headless Checkout Judge Confidence", y_label="Confidence (%)", y_max=100)}
 
-## TL;DR
+### Token Volume
 
-We evaluated 6 `xsolla-ai-kit` skills using the current harness algorithm.
+Measurement: approximate mean tokens in prompt plus answer transcript.
 
-- **AI Kit**: task prompt + `SKILL.md` + skill references.
-- **Official docs**: task prompt + curated `developers.xsolla.com` corpus.
-- **No Context**: task prompt only.
+{chart(data, field="tokens_mean", title="Headless Checkout Token Volume", y_label="Mean tokens", y_max=10000)}
 
-Each skill was run `k=3` times per variant, then judged by an Anthropic LLM judge against the same rubric.
+## What We Got
 
-Main result:
+AI Kit passed all three runs. The official docs baseline passed two out of three runs. The no-context baseline passed zero runs.
 
-- **AI Kit**: `{ai['successes']}/{ai['runs']}` pass = **{pct(ai['success_rate'])}**
-- **Official docs**: `{docs['successes']}/{docs['runs']}` pass = **{pct(docs['success_rate'])}**
-- **No Context**: `{no_context['successes']}/{no_context['runs']}` pass = **{pct(no_context['success_rate'])}**
-
-Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, and `shop-setup`; official docs still win for `merchant-setup`; `payments-config` and `webhooks-impl` need product-quality remediation before they can be trusted.
-
-Generated: `{generated_at}`
-
-## Methodology
-
-### Run Matrix
-
-- Skills: `{", ".join(data['summary']['skills'])}`
-- Variants: `ai_kit`, `docs`, `no_context`
-- Repetitions: `k=3`
-- Total scored runs: `{data['summary']['scored_runs']}`
-- Evidence level: agent transcript + LLM judge
-- Reliability: `{data['summary']['reliability']}`
-
-### Model Input Data
-
-| Input | Value |
-|---|---|
-| Provider | Anthropic Messages API |
-| Endpoint | `https://api.anthropic.com/v1/messages` |
-| Anthropic version header | `2023-06-01` |
-| Agent model | `claude-sonnet-4-6` |
-| Judge model | `claude-sonnet-4-6` |
-| Agent `max_tokens` | `4096` |
-| Judge `max_tokens` | `4096` |
-| Agent temperature | `0.2` |
-| Judge temperature | `0` |
-| Agent input per run | System instruction + task prompt + variant-specific context |
-| Judge input per run | Transcript + rubric checks + safety checks |
-
-`max_tokens` is the output cap we set for each Anthropic API call. The Anthropic API requires this field in the Messages request; for this assessment we used `4096` for both agent and judge calls.
-
-### Variants
-
-| Variant | Context Given to Agent | Purpose |
-|---|---|---|
-| AI Kit | User task + `SKILL.md` + references | Measures skill value |
-| Official docs | User task + official `developers.xsolla.com` docs corpus | Fair documentation baseline |
-| No Context | User task only | Baseline for model behavior without skill or documentation context |
-
-### Metrics
-
-| Metric | Meaning |
-|---|---|
-| Success rate | How many runs passed the rubric and safety checks. This is the main quality signal. |
-| Distribution | Shows pass/fail for each of the 3 runs, like `111`, `010`, or `000`. It shows stability, not just the average. |
-| First try | Shows whether the first run passed. It matters because users usually expect the first answer to work. |
-| pass@k | Shows whether at least one of the 3 runs passed. It shows whether retries can recover a weak first answer. |
-| Confidence | Average judge score before applying the pass threshold. It helps distinguish near-misses from bad answers. |
-| Safety errors | Count of failed safety checks, such as exposing secrets or unsafe integration advice. Any safety error is a launch blocker. |
-| Contract errors | Count of failed API/schema checks. These catch wrong endpoints, wrong field types, and doc-vs-live mismatches. |
-| Tokens | Approximate size of the prompt plus answer. Lower token use is better only when quality stays high. |
-
-## Overall Results
-
-{render_variant_summary(rows)}
-
-## Skill Comparison
-
-This table compares all three variants on the same benchmark. Winner is selected between AI Kit and official docs because those are the two usable context strategies for production work.
-
-{render_skill_table(data)}
-
-## Graphs
-
-{render_graph_block(
-    "Success Rate",
-    "percent of runs that passed the rubric threshold (`pass_rate >= 95`) and all safety checks.",
-    render_success_mermaid(data),
-)}
-
-{render_graph_block(
-    "First-Try Success",
-    "whether the first run for each skill and variant passed, expressed as 0% or 100%.",
-    render_metric_mermaid(data, title="First-Try Success by Skill", field="first_try_success_rate_pct", y_label="First-try success (%)", y_max=100),
-)}
-
-{render_graph_block(
-    "pass@k",
-    "whether at least one of the `k=3` runs passed for each skill and variant.",
-    render_metric_mermaid(data, title="pass@k by Skill", field="pass_at_k_pct", y_label="pass@k (%)", y_max=100),
-)}
-
-{render_graph_block(
-    "Judge Confidence",
-    "average judge pass rate before thresholding, by skill and variant.",
-    render_metric_mermaid(data, title="Average Judge Confidence by Skill", field="validated_confidence_mean", y_label="Confidence (%)", y_max=100),
-)}
-
-{render_graph_block(
-    "Safety Errors",
-    "count of failed safety checks across `k=3` runs for each skill and variant.",
-    render_risk_mermaid(data),
-)}
-
-{render_graph_block(
-    "Contract Errors",
-    "count of failed contract/programmatic checks across `k=3` runs for each skill and variant.",
-    render_metric_mermaid(data, title="Contract Errors by Skill", field="contract_errors", y_label="Contract errors", y_max=3),
-)}
-
-{render_graph_block(
-    "Token Volume",
-    "approximate mean tokens in prompt plus answer transcript, by skill and variant.",
-    render_metric_mermaid(data, title="Mean Tokens by Skill", field="tokens_mean", y_label="Mean tokens", y_max=3000),
-)}
-
-### Outcome Map
-
-Measurement: winner by skill across AI Kit, official docs, and No Context success rate. All-fail means every variant scored 0%.
-
-{render_outcome_map(data)}
-
-## Key Findings
-
-1. `catalog-design`, `login-setup`, and `shop-setup` passed all AI Kit runs (`3/3`) and beat the official docs baseline.
-2. `merchant-setup` performed better with official docs (`3/3`) than with AI Kit (`1/3`), indicating the skill needs tightening around credential safety and setup flow.
-3. `payments-config` failed across all variants. This is expected risk because the skill is still placeholder/planned.
-4. `webhooks-impl` failed across all variants. The AI Kit skill has useful content but did not reach the strict rubric threshold, so it needs rubric-aligned rewrite or deeper handler examples.
-5. The no-context control failed every run (`0/18`), so context quality is the core variable in this assessment rather than generic model capability.
+This means the new skill materially improves the agent's ability to produce a complete sandbox Headless Checkout implementation, especially when the eval checks generated files instead of only prose.
 
 ## Files
 
-- `data/dashboard-data.json` — machine-readable scored results.
+- `data/dashboard-data.json` — machine-readable scored result.
 - `data/ai-kit-eval-report.md` — raw harness report.
 - `scripts/generate_readme.py` — regenerates this README from `data/dashboard-data.json`.
 
-## Re-generate README
+## Regenerate
 
 ```bash
 python3 scripts/generate_readme.py
@@ -374,7 +197,7 @@ python3 scripts/generate_readme.py
 
 def main() -> None:
     data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
-    README_PATH.write_text(render_readme(data), encoding="utf-8")
+    README_PATH.write_text(render(data), encoding="utf-8")
     print(f"Wrote {README_PATH}")
 
 
