@@ -80,7 +80,7 @@ For `headless-checkout-integration`, the payment skill was tested with the stron
 
 ## Skill Comparison
 
-This table compares all three variants on the same benchmark. Winner is selected between AI Kit and official docs because those are the two usable context strategies for production work.
+This table compares all three variants using the same benchmark. The winner is selected from the AI Kit, the official documentation and the 'No Context' strategy, as these are the three most suitable for production work.
 
 | Skill | AI Kit | Official Docs | No Context | Winner | AI Kit Safety | Docs Safety | No Context Safety | Notes |
 |---|---:|---:|---:|---|---:|---:|---:|---|
