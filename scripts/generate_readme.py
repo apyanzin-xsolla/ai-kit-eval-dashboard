@@ -176,10 +176,39 @@ xychart-beta
 ```"""
 
 
+SKILL_DESCRIPTIONS = {
+    "catalog-design": (
+        "We asked the agent to configure a game catalog with virtual currency, items, bundles, "
+        "regional pricing, storefront reads, and purchase confirmation. A good answer had to separate Admin API setup from client catalog usage and avoid known pricing/schema mistakes."
+    ),
+    "login-setup": (
+        "We asked the agent to design a web Login integration with Google, email/password, passwordless email, "
+        "and backend JWT validation. A good answer had to use the right OAuth/Login flows and verify JWTs safely."
+    ),
+    "merchant-setup": (
+        "We asked the agent to guide a new sandbox merchant/project setup and credential storage. "
+        "A good answer had to protect API keys, use the correct project-level credentials, and avoid pretending the agent can create the account itself."
+    ),
+    "headless-checkout-integration": (
+        "We asked the agent to generate a runnable sandbox Headless Checkout implementation. "
+        "A good answer had to create real files with SDK setup, safe token handoff, card form flow, return/status handling, and sandbox card validation."
+    ),
+    "shop-setup": (
+        "We asked the agent to plan a full headless shop from catalog browsing to checkout and fulfillment. "
+        "A good answer had to connect catalog, cart, Login, payment token, payment UI, webhooks, and production readiness in the right order."
+    ),
+    "webhooks-impl": (
+        "We asked the agent to implement a backend webhook handler for granting items after purchase. "
+        "A good answer had to verify signatures, handle retries and idempotency, process required events, and avoid double grants."
+    ),
+}
+
+
 def render_skill_metric_charts(data: dict) -> str:
     blocks = []
     for skill in data["summary"]["skills"]:
-        blocks.append(f"### {skill}\n\n{render_skill_metric_chart(data, skill)}")
+        description = SKILL_DESCRIPTIONS.get(skill, "We tested whether the agent could complete the expected production workflow for this skill.")
+        blocks.append(f"### {skill}\n\n**Description:** {description}\n\n{render_skill_metric_chart(data, skill)}")
     return "\n\n".join(blocks)
 
 

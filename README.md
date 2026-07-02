@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, `headless-checkout-integration`, and `shop-setup`; official docs still win for `merchant-setup`; `webhooks-impl` needs product-quality remediation before it can be trusted.
 
-Generated: `2026-07-02 05:26 UTC`
+Generated: `2026-07-02 05:42 UTC`
 
 ## Methodology
 
@@ -107,6 +107,8 @@ Legend:
 
 ### catalog-design
 
+**Description:** We asked the agent to configure a game catalog with virtual currency, items, bundles, regional pricing, storefront reads, and purchase confirmation. A good answer had to separate Admin API setup from client catalog usage and avoid known pricing/schema mistakes.
+
 ```mermaid
 xychart-beta
     title "catalog-design: metrics by variant"
@@ -118,6 +120,8 @@ xychart-beta
 ```
 
 ### login-setup
+
+**Description:** We asked the agent to design a web Login integration with Google, email/password, passwordless email, and backend JWT validation. A good answer had to use the right OAuth/Login flows and verify JWTs safely.
 
 ```mermaid
 xychart-beta
@@ -131,6 +135,8 @@ xychart-beta
 
 ### merchant-setup
 
+**Description:** We asked the agent to guide a new sandbox merchant/project setup and credential storage. A good answer had to protect API keys, use the correct project-level credentials, and avoid pretending the agent can create the account itself.
+
 ```mermaid
 xychart-beta
     title "merchant-setup: metrics by variant"
@@ -142,6 +148,8 @@ xychart-beta
 ```
 
 ### headless-checkout-integration
+
+**Description:** We asked the agent to generate a runnable sandbox Headless Checkout implementation. A good answer had to create real files with SDK setup, safe token handoff, card form flow, return/status handling, and sandbox card validation.
 
 ```mermaid
 xychart-beta
@@ -155,6 +163,8 @@ xychart-beta
 
 ### shop-setup
 
+**Description:** We asked the agent to plan a full headless shop from catalog browsing to checkout and fulfillment. A good answer had to connect catalog, cart, Login, payment token, payment UI, webhooks, and production readiness in the right order.
+
 ```mermaid
 xychart-beta
     title "shop-setup: metrics by variant"
@@ -166,6 +176,8 @@ xychart-beta
 ```
 
 ### webhooks-impl
+
+**Description:** We asked the agent to implement a backend webhook handler for granting items after purchase. A good answer had to verify signatures, handle retries and idempotency, process required events, and avoid double grants.
 
 ```mermaid
 xychart-beta
