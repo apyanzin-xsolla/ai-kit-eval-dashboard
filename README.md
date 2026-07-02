@@ -45,10 +45,6 @@ Generated: `2026-07-02 05:56 UTC`
 | Agent input per run | System instruction + task prompt + variant-specific context |
 | Judge input per run | Transcript + rubric checks + safety checks |
 
-`max_tokens` is the output cap we set for each Anthropic API call. The Anthropic API requires this field in the Messages request.
-
-For `headless-checkout-integration`, the payment skill was tested with the stronger artifact-based flow: the agent had to generate runnable project files and pass automated code checks in addition to the LLM judge.
-
 ### Variants
 
 | Variant | Context Given to Agent | Purpose |
@@ -148,6 +144,8 @@ xychart-beta
 ### headless-checkout-integration
 
 **Description:** We asked the agent to generate a runnable sandbox Headless Checkout implementation. A good answer had to create real files with SDK setup, safe token handoff, card form flow, return/status handling, and sandbox card validation.
+
+*For headless-checkout-integration, the payment skill was tested with the stronger artifact-based flow: the agent had to generate runnable project files and pass automated code checks in addition to the LLM judge.*
 
 ```mermaid
 xychart-beta
