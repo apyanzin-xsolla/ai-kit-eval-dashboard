@@ -38,10 +38,8 @@ Generated: `2026-07-02 05:56 UTC`
 | Provider | Anthropic Messages API |
 | Endpoint | `https://api.anthropic.com/v1/messages` |
 | Anthropic version header | `2023-06-01` |
-| Agent model | `claude-sonnet-4-6` |
-| Judge model | `claude-sonnet-4-6` |
-| Agent `max_tokens` | `4096` standard eval; `16000` for Headless Checkout artifact eval |
-| Judge `max_tokens` | `4096` standard eval; `6000` for Headless Checkout artifact eval |
+| Agent model | `claude-sonnet-4-6 Max` |
+| Judge model | `claude-sonnet-4-6 Max` |
 | Agent temperature | `0.2` |
 | Judge temperature | `0` |
 | Agent input per run | System instruction + task prompt + variant-specific context |
