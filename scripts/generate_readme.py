@@ -165,6 +165,23 @@ def render_skill_metric_chart(data: dict, skill: str) -> str:
     ai_values = metric_values_for_skill(data, skill, "ai_kit", max_tokens)
     docs_values = metric_values_for_skill(data, skill, "docs", max_tokens)
     no_context_values = metric_values_for_skill(data, skill, "no_context", max_tokens)
+    rows = [get_row(data["leaderboard"], skill, variant) for variant in ["ai_kit", "docs", "no_context"]]
+    if all((row["success_rate_pct"] or 0) == 0 for row in rows):
+        return (
+            "> No variant passed this skill. The chart is outcome-gated, so all business metrics are shown as `0`.\n\n"
+            "| Variant | Success | Confidence | Safety Errors | Contract Errors |\n"
+            "|---|---:|---:|---:|---:|\n"
+            + "\n".join(
+                "| {variant} | {success} | {confidence} | {safety} | {contract} |".format(
+                    variant={"ai_kit": "AI Kit", "docs": "Official docs", "no_context": "No Context"}[row["variant"]],
+                    success=pct(row["success_rate_pct"]),
+                    confidence=pct(row["validated_confidence_mean"]),
+                    safety=row["safety_errors"],
+                    contract=row["contract_errors"],
+                )
+                for row in rows
+            )
+        )
     return f"""```mermaid
 xychart-beta
     title "{skill}: metrics by variant"

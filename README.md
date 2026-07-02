@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, `headless-checkout-integration`, and `shop-setup`; official docs still win for `merchant-setup`; `webhooks-impl` needs product-quality remediation before it can be trusted.
 
-Generated: `2026-07-02 05:42 UTC`
+Generated: `2026-07-02 05:56 UTC`
 
 ## Methodology
 
@@ -179,15 +179,13 @@ xychart-beta
 
 **Description:** We asked the agent to implement a backend webhook handler for granting items after purchase. A good answer had to verify signatures, handle retries and idempotency, process required events, and avoid double grants.
 
-```mermaid
-xychart-beta
-    title "webhooks-impl: metrics by variant"
-    x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
-    y-axis "Normalized score, higher is better" 0 --> 100
-    bar [0, 0, 0, 0, 0, 0, 0]
-    bar [0, 0, 0, 0, 0, 0, 0]
-    bar [0, 0, 0, 0, 0, 0, 0]
-```
+> No variant passed this skill. The chart is outcome-gated, so all business metrics are shown as `0`.
+
+| Variant | Success | Confidence | Safety Errors | Contract Errors |
+|---|---:|---:|---:|---:|
+| AI Kit | 0% | 82.3% | 1 | 0 |
+| Official docs | 0% | 68.3% | 2 | 0 |
+| No Context | 0% | 63% | 1 | 0 |
 
 ### Outcome Map
 
