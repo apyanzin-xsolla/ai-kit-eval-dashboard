@@ -18,7 +18,7 @@ Main result:
 
 Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, `headless-checkout-integration`, and `shop-setup`; official docs still win for `merchant-setup`; `webhooks-impl` needs product-quality remediation before it can be trusted.
 
-Generated: `2026-07-02 05:20 UTC`
+Generated: `2026-07-02 05:26 UTC`
 
 ## Methodology
 
@@ -97,7 +97,7 @@ This table compares all three variants on the same benchmark. Winner is selected
 
 Each chart below is centered on one skill. The x-axis shows the metrics for that skill, and the three bars compare AI Kit, official docs, and No Context.
 
-All values are normalized to a 0–100 scale where higher is better. For safety and contract metrics, `100` means zero errors; for token efficiency, failed variants get `0` because cheap but unusable answers do not create business value.
+All values are normalized to a 0–100 scale where higher is better. The chart is outcome-gated: if a variant has `0%` success for a skill, its diagnostic metrics are shown as `0` because a safe-looking but unusable answer does not create business value.
 
 Legend:
 
@@ -114,7 +114,7 @@ xychart-beta
     y-axis "Normalized score, higher is better" 0 --> 100
     bar [100, 100, 100, 100, 100, 100, 73.6]
     bar [66.7, 0, 100, 93.3, 100, 100, 74.9]
-    bar [0, 0, 0, 73.3, 100, 100, 0]
+    bar [0, 0, 0, 0, 0, 0, 0]
 ```
 
 ### login-setup
@@ -126,7 +126,7 @@ xychart-beta
     y-axis "Normalized score, higher is better" 0 --> 100
     bar [100, 100, 100, 100, 100, 100, 72.4]
     bar [33.3, 0, 100, 84, 100, 100, 73.7]
-    bar [0, 0, 0, 64, 66.7, 100, 0]
+    bar [0, 0, 0, 0, 0, 0, 0]
 ```
 
 ### merchant-setup
@@ -138,7 +138,7 @@ xychart-beta
     y-axis "Normalized score, higher is better" 0 --> 100
     bar [33.3, 0, 100, 83.3, 33.3, 100, 90.8]
     bar [100, 100, 100, 100, 100, 100, 86.2]
-    bar [0, 0, 0, 70, 100, 100, 0]
+    bar [0, 0, 0, 0, 0, 0, 0]
 ```
 
 ### headless-checkout-integration
@@ -150,7 +150,7 @@ xychart-beta
     y-axis "Normalized score, higher is better" 0 --> 100
     bar [100, 100, 100, 97, 100, 100, 0]
     bar [66.7, 100, 100, 63.6, 100, 100, 8.5]
-    bar [0, 0, 0, 0, 100, 100, 0]
+    bar [0, 0, 0, 0, 0, 0, 0]
 ```
 
 ### shop-setup
@@ -162,7 +162,7 @@ xychart-beta
     y-axis "Normalized score, higher is better" 0 --> 100
     bar [100, 100, 100, 100, 100, 100, 69.6]
     bar [66.7, 100, 100, 93.3, 66.7, 100, 73.8]
-    bar [0, 0, 0, 40, 66.7, 66.7, 0]
+    bar [0, 0, 0, 0, 0, 0, 0]
 ```
 
 ### webhooks-impl
@@ -172,9 +172,9 @@ xychart-beta
     title "webhooks-impl: metrics by variant"
     x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
     y-axis "Normalized score, higher is better" 0 --> 100
-    bar [0, 0, 0, 82.3, 66.7, 100, 0]
-    bar [0, 0, 0, 68.3, 33.3, 100, 0]
-    bar [0, 0, 0, 63, 66.7, 100, 0]
+    bar [0, 0, 0, 0, 0, 0, 0]
+    bar [0, 0, 0, 0, 0, 0, 0]
+    bar [0, 0, 0, 0, 0, 0, 0]
 ```
 
 ### Outcome Map

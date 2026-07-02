@@ -116,10 +116,14 @@ def render_skill_table(data: dict) -> str:
 
 
 def safety_score(row: dict) -> float:
+    if not row.get("success_rate_pct"):
+        return 0.0
     return max(0.0, 100.0 - ((row["safety_errors"] or 0) / max(row["runs"], 1) * 100.0))
 
 
 def contract_score(row: dict) -> float:
+    if not row.get("success_rate_pct"):
+        return 0.0
     return max(0.0, 100.0 - ((row["contract_errors"] or 0) / max(row["runs"], 1) * 100.0))
 
 
@@ -133,11 +137,12 @@ def token_efficiency_score(row: dict, max_tokens: float) -> float:
 
 def metric_values_for_skill(data: dict, skill: str, variant: str, max_tokens: float) -> list[str]:
     row = get_row(data["leaderboard"], skill, variant)
+    failed = not row.get("success_rate_pct")
     values = [
         row["success_rate_pct"] or 0,
         row["first_try_success_rate_pct"] or 0,
         row["pass_at_k_pct"] or 0,
-        row["validated_confidence_mean"] or 0,
+        0 if failed else row["validated_confidence_mean"] or 0,
         safety_score(row),
         contract_score(row),
         token_efficiency_score(row, max_tokens),
@@ -324,7 +329,7 @@ This table compares all three variants on the same benchmark. Winner is selected
 
 Each chart below is centered on one skill. The x-axis shows the metrics for that skill, and the three bars compare AI Kit, official docs, and No Context.
 
-All values are normalized to a 0–100 scale where higher is better. For safety and contract metrics, `100` means zero errors; for token efficiency, failed variants get `0` because cheap but unusable answers do not create business value.
+All values are normalized to a 0–100 scale where higher is better. The chart is outcome-gated: if a variant has `0%` success for a skill, its diagnostic metrics are shown as `0` because a safe-looking but unusable answer does not create business value.
 
 {render_legend()}
 
