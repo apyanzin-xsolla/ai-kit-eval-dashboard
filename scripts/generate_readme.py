@@ -124,6 +124,8 @@ def contract_score(row: dict) -> float:
 
 
 def token_efficiency_score(row: dict, max_tokens: float) -> float:
+    if not row.get("success_rate_pct"):
+        return 0.0
     if max_tokens <= 0:
         return 0.0
     return max(0.0, 100.0 - ((row["tokens_mean"] or 0) / max_tokens * 100.0))
@@ -322,7 +324,7 @@ This table compares all three variants on the same benchmark. Winner is selected
 
 Each chart below is centered on one skill. The x-axis shows the metrics for that skill, and the three bars compare AI Kit, official docs, and No Context.
 
-All values are normalized to a 0–100 scale where higher is better. For safety and contract metrics, `100` means zero errors; for token efficiency, higher means fewer tokens relative to the largest run in this report.
+All values are normalized to a 0–100 scale where higher is better. For safety and contract metrics, `100` means zero errors; for token efficiency, failed variants get `0` because cheap but unusable answers do not create business value.
 
 {render_legend()}
 
