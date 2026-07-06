@@ -305,7 +305,7 @@ Main result:
 - **Official docs**: `{docs['successes']}/{docs['runs']}` pass = **{pct(docs['success_rate'])}**
 - **No Context**: `{no_context['successes']}/{no_context['runs']}` pass = **{pct(no_context['success_rate'])}**
 
-Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, `headless-checkout-integration`, and `shop-setup`; official docs still win for `merchant-setup`; `webhooks-impl` needs product-quality remediation before it can be trusted.
+Interpretation: AI Kit outperforms official docs overall, but production-ready value is concentrated in `headless-checkout-integration`. `login-setup` and `merchant-setup` are partial wins, while `catalog-design`, `shop-setup`, and `webhooks-impl` need product-quality remediation before they can be trusted.
 
 Generated: `{generated_at}`
 
@@ -328,11 +328,11 @@ Generated: `{generated_at}`
 | Endpoint | `https://api.anthropic.com/v1/messages` |
 | Anthropic version header | `2023-06-01` |
 | Agent model | `claude-sonnet-4-6` |
-| Judge model | `claude-sonnet-4-6` |
+| Judge model | `claude-sonnet-5` |
 | Agent `max_tokens` | `4096` standard eval; `16000` for Headless Checkout artifact eval |
 | Judge `max_tokens` | `4096` standard eval; `6000` for Headless Checkout artifact eval |
 | Agent temperature | `0.2` |
-| Judge temperature | `0` |
+| Judge temperature | Not sent for `claude-sonnet-5` because Anthropic rejects deprecated temperature for this model |
 | Agent input per run | System instruction + task prompt + variant-specific context |
 | Judge input per run | Transcript + rubric checks + safety checks |
 
@@ -389,10 +389,10 @@ Measurement: winner by skill across AI Kit, official docs, and No Context succes
 
 ## Key Findings
 
-1. `catalog-design`, `login-setup`, and `shop-setup` passed all AI Kit runs (`3/3`) and beat the official docs baseline.
-2. `merchant-setup` performed better with official docs (`3/3`) than with AI Kit (`1/3`), indicating the skill needs tightening around credential safety and setup flow.
-3. `headless-checkout-integration` replaced the old `payments-config` result and passed all AI Kit artifact-based runs (`3/3`), while official docs passed `2/3`.
-4. `webhooks-impl` failed across all variants. The AI Kit skill has useful content but did not reach the strict rubric threshold, so it needs rubric-aligned rewrite or deeper handler examples.
+1. `headless-checkout-integration` is the strongest result: AI Kit and official docs both passed all artifact-based runs (`3/3`), while no-context failed (`0/3`).
+2. `login-setup` and `merchant-setup` are partial AI Kit wins (`2/3` each), but both still show safety risk and need tighter step-by-step guardrails.
+3. `catalog-design`, `shop-setup`, and `webhooks-impl` failed across all variants, so these skills need rubric-aligned rewrites or deeper production examples.
+4. Official docs only produced a passing outcome for `headless-checkout-integration`; docs alone were not enough for the other tested workflows.
 5. The no-context control failed every run (`0/18`), so context quality is the core variable in this assessment rather than generic model capability.
 
 ## Files
