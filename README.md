@@ -12,13 +12,13 @@ Each skill was run `k=3` times per variant, then judged by an Anthropic LLM judg
 
 Main result:
 
-- **AI Kit**: `7/18` pass = **38.9%**
-- **Official docs**: `3/18` pass = **16.7%**
+- **AI Kit**: `13/18` pass = **72.2%**
+- **Official docs**: `10/18` pass = **55.6%**
 - **No Context**: `0/18` pass = **0%**
 
-Interpretation: AI Kit outperforms official docs overall, but production-ready value is concentrated in `headless-checkout-integration`. `login-setup` and `merchant-setup` are partial wins, while `catalog-design`, `shop-setup`, and `webhooks-impl` need product-quality remediation before they can be trusted.
+Interpretation: AI Kit outperforms official docs overall, but the result is uneven. It is strong for `catalog-design`, `login-setup`, `headless-checkout-integration`, and `shop-setup`; official docs still win for `merchant-setup`; `webhooks-impl` needs product-quality remediation before it can be trusted.
 
-Generated: `2026-07-06 07:48 UTC`
+Generated: `2026-07-02 05:56 UTC`
 
 ## Methodology
 
@@ -38,12 +38,10 @@ Generated: `2026-07-06 07:48 UTC`
 | Provider | Anthropic Messages API |
 | Endpoint | `https://api.anthropic.com/v1/messages` |
 | Anthropic version header | `2023-06-01` |
-| Agent model | `claude-sonnet-4-6` |
-| Judge model | `claude-sonnet-5` |
-| Agent `max_tokens` | `4096` standard eval; `16000` for Headless Checkout artifact eval |
-| Judge `max_tokens` | `4096` standard eval; `6000` for Headless Checkout artifact eval |
+| Agent model | `claude-sonnet-4-6 Max` |
+| Judge model | `claude-sonnet-4-6 Max` |
 | Agent temperature | `0.2` |
-| Judge temperature | Not sent for `claude-sonnet-5` because Anthropic rejects deprecated temperature for this model |
+| Judge temperature | `0` |
 | Agent input per run | System instruction + task prompt + variant-specific context |
 | Judge input per run | Transcript + rubric checks + safety checks |
 
@@ -72,9 +70,9 @@ Generated: `2026-07-06 07:48 UTC`
 
 | Variant | Pass | Success Rate | Avg Confidence | Safety Errors | Contract Errors | Avg Tokens |
 |---|---:|---:|---:|---:|---:|---:|
-| AI Kit | 7/18 | 38.9% | 74.9% | 6 | 0 | 3273 |
-| Official docs | 3/18 | 16.7% | 66.9% | 5 | 0 | 3137 |
-| No context | 0/18 | 0% | 31.4% | 10 | 1 | 2576 |
+| AI Kit | 13/18 | 72.2% | 93.8% | 3 | 0 | 3299 |
+| Official docs | 10/18 | 55.6% | 83.8% | 3 | 0 | 3139 |
+| No context | 0/18 | 0% | 51.7% | 3 | 1 | 1643 |
 
 ## Skill Comparison
 
@@ -82,12 +80,12 @@ This table compares all three variants using the same benchmark. The winner is s
 
 | Skill | AI Kit | Official Docs | No Context | Winner | AI Kit Safety | Docs Safety | No Context Safety | Notes |
 |---|---:|---:|---:|---|---:|---:|---:|---|
-| catalog-design | 0% `000` | 0% `000` | 0% `000` | Tie | 0 | 0 | 0 | both fail |
-| login-setup | 66.7% `011` | 0% `000` | 0% `000` | AI Kit | 1 | 0 | 1 | AI Kit safety risk |
-| merchant-setup | 66.7% `101` | 0% `000` | 0% `000` | AI Kit | 1 | 0 | 0 | AI Kit safety risk |
-| headless-checkout-integration | 100% `111` | 100% `111` | 0% `000` | Tie | 0 | 0 | 3 | artifact-based eval |
-| shop-setup | 0% `000` | 0% `000` | 0% `000` | Tie | 2 | 3 | 3 | both fail, AI Kit safety risk, docs safety risk |
-| webhooks-impl | 0% `000` | 0% `000` | 0% `000` | Tie | 2 | 2 | 3 | both fail, AI Kit safety risk, docs safety risk |
+| catalog-design | 100% `111` | 66.7% `011` | 0% `000` | AI Kit | 0 | 0 | 0 | - |
+| login-setup | 100% `111` | 33.3% `010` | 0% `000` | AI Kit | 0 | 0 | 1 | - |
+| merchant-setup | 33.3% `010` | 100% `111` | 0% `000` | Official docs | 2 | 0 | 0 | AI Kit safety risk |
+| headless-checkout-integration | 100% `111` | 66.7% `110` | 0% `000` | AI Kit | 0 | 0 | 0 | artifact-based eval |
+| shop-setup | 100% `111` | 66.7% `110` | 0% `000` | AI Kit | 0 | 1 | 1 | docs safety risk |
+| webhooks-impl | 0% `000` | 0% `000` | 0% `000` | Tie | 1 | 2 | 1 | both fail, AI Kit safety risk, docs safety risk |
 
 ## Skills
 
@@ -105,13 +103,15 @@ Legend:
 
 **Description:** We asked the agent to configure a game catalog with virtual currency, items, bundles, regional pricing, storefront reads, and purchase confirmation. A good answer had to separate Admin API setup from client catalog usage and avoid known pricing/schema mistakes.
 
-> No variant passed this skill. The chart is outcome-gated, so all business metrics are shown as `0`.
-
-| Variant | Success | Confidence | Safety Errors | Contract Errors |
-|---|---:|---:|---:|---:|
-| AI Kit | 0% | 80% | 0 | 0 |
-| Official docs | 0% | 62.7% | 0 | 0 |
-| No Context | 0% | 44.7% | 0 | 0 |
+```mermaid
+xychart-beta
+    title "catalog-design: metrics by variant"
+    x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
+    y-axis "Normalized score, higher is better" 0 --> 100
+    bar [100, 100, 100, 100, 100, 100, 73.6]
+    bar [66.7, 0, 100, 93.3, 100, 100, 74.9]
+    bar [0, 0, 0, 0, 0, 0, 0]
+```
 
 ### login-setup
 
@@ -122,8 +122,8 @@ xychart-beta
     title "login-setup: metrics by variant"
     x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
     y-axis "Normalized score, higher is better" 0 --> 100
-    bar [66.7, 0, 100, 86.7, 66.7, 100, 73.3]
-    bar [0, 0, 0, 0, 0, 0, 0]
+    bar [100, 100, 100, 100, 100, 100, 72.4]
+    bar [33.3, 0, 100, 84, 100, 100, 73.7]
     bar [0, 0, 0, 0, 0, 0, 0]
 ```
 
@@ -136,8 +136,8 @@ xychart-beta
     title "merchant-setup: metrics by variant"
     x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
     y-axis "Normalized score, higher is better" 0 --> 100
-    bar [66.7, 100, 100, 94.3, 66.7, 100, 90.4]
-    bar [0, 0, 0, 0, 0, 0, 0]
+    bar [33.3, 0, 100, 83.3, 33.3, 100, 90.8]
+    bar [100, 100, 100, 100, 100, 100, 86.2]
     bar [0, 0, 0, 0, 0, 0, 0]
 ```
 
@@ -152,8 +152,8 @@ xychart-beta
     title "headless-checkout-integration: metrics by variant"
     x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
     y-axis "Normalized score, higher is better" 0 --> 100
-    bar [100, 100, 100, 100, 100, 100, 0]
-    bar [100, 100, 100, 97, 100, 100, 8.7]
+    bar [100, 100, 100, 97, 100, 100, 0]
+    bar [66.7, 100, 100, 63.6, 100, 100, 8.5]
     bar [0, 0, 0, 0, 0, 0, 0]
 ```
 
@@ -161,13 +161,15 @@ xychart-beta
 
 **Description:** We asked the agent to plan a full headless shop from catalog browsing to checkout and fulfillment. A good answer had to connect catalog, cart, Login, payment token, payment UI, webhooks, and production readiness in the right order.
 
-> No variant passed this skill. The chart is outcome-gated, so all business metrics are shown as `0`.
-
-| Variant | Success | Confidence | Safety Errors | Contract Errors |
-|---|---:|---:|---:|---:|
-| AI Kit | 0% | 46.7% | 2 | 0 |
-| Official docs | 0% | 47.7% | 3 | 0 |
-| No Context | 0% | 25.5% | 3 | 0 |
+```mermaid
+xychart-beta
+    title "shop-setup: metrics by variant"
+    x-axis ["Success", "First try", "pass@k", "Confidence", "Safety", "Contract", "Token efficiency"]
+    y-axis "Normalized score, higher is better" 0 --> 100
+    bar [100, 100, 100, 100, 100, 100, 69.6]
+    bar [66.7, 100, 100, 93.3, 66.7, 100, 73.8]
+    bar [0, 0, 0, 0, 0, 0, 0]
+```
 
 ### webhooks-impl
 
@@ -177,9 +179,9 @@ xychart-beta
 
 | Variant | Success | Confidence | Safety Errors | Contract Errors |
 |---|---:|---:|---:|---:|
-| AI Kit | 0% | 41.7% | 2 | 0 |
-| Official docs | 0% | 45.8% | 2 | 0 |
-| No Context | 0% | 34.5% | 3 | 0 |
+| AI Kit | 0% | 82.3% | 1 | 0 |
+| Official docs | 0% | 68.3% | 2 | 0 |
+| No Context | 0% | 63% | 1 | 0 |
 
 ### Outcome Map
 
@@ -188,19 +190,19 @@ Measurement: winner by skill across AI Kit, official docs, and No Context succes
 ```mermaid
 flowchart LR
   A[Assessment outcome]
-  A --> N1["AI Kit wins: login-setup, merchant-setup"]
-  A --> N2["Docs wins: none"]
+  A --> N1["AI Kit wins: catalog-design, login-setup, headless-checkout-integration, shop-setup"]
+  A --> N2["Docs wins: merchant-setup"]
   A --> N3["No Context wins: none"]
-  A --> N4["All fail: catalog-design, shop-setup, webhooks-impl"]
-  A --> N5["Tie: headless-checkout-integration"]
+  A --> N4["All fail: webhooks-impl"]
+  A --> N5["Tie: none"]
 ```
 
 ## Key Findings
 
-1. `headless-checkout-integration` is the strongest result: AI Kit and official docs both passed all artifact-based runs (`3/3`), while no-context failed (`0/3`).
-2. `login-setup` and `merchant-setup` are partial AI Kit wins (`2/3` each), but both still show safety risk and need tighter step-by-step guardrails.
-3. `catalog-design`, `shop-setup`, and `webhooks-impl` failed across all variants, so these skills need rubric-aligned rewrites or deeper production examples.
-4. Official docs only produced a passing outcome for `headless-checkout-integration`; docs alone were not enough for the other tested workflows.
+1. `catalog-design`, `login-setup`, and `shop-setup` passed all AI Kit runs (`3/3`) and beat the official docs baseline.
+2. `merchant-setup` performed better with official docs (`3/3`) than with AI Kit (`1/3`), indicating the skill needs tightening around credential safety and setup flow.
+3. `headless-checkout-integration` replaced the old `payments-config` result and passed all AI Kit artifact-based runs (`3/3`), while official docs passed `2/3`.
+4. `webhooks-impl` failed across all variants. The AI Kit skill has useful content but did not reach the strict rubric threshold, so it needs rubric-aligned rewrite or deeper handler examples.
 5. The no-context control failed every run (`0/18`), so context quality is the core variable in this assessment rather than generic model capability.
 
 ## Files
